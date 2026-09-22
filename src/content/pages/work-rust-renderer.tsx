@@ -35,7 +35,6 @@ export default function WorkRustRenderer({ locale }: { locale: Locale }) {
           <p className="eyebrow">PROTOPIE / STUDIO XID</p>
           <h2>Cross-platform Rendering</h2>
           <p>{t('rustRenderer.theProjectMovedRenderingFromProtopieS')}</p>
-          <p className="source-note">{t('rustRenderer.thisWorkWasStillInDevelopmentBefore')}</p>
         </div>
         <section id="shared">
           <p className="eyebrow">{t('rustRenderer.decision01Consistency')}</p>

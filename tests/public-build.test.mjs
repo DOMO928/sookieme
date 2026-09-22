@@ -111,7 +111,6 @@ test('company renderer documents and archive links are absent from public output
   }
   const renderer = await readFile(resolve(root, 'work/rust-renderer/index.html'), 'utf8');
   assert.doesNotMatch(renderer, /Development notes|StrokePlanSet|MaskRaster|ApplyMask/);
-  assert.match(renderer, /전체 플랫폼 출시 전 개발 단계/);
 });
 
 // Captures are media only; the source apps and their local mocks must stay private.

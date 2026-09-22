@@ -63,7 +63,7 @@
     "whenWebgpuIsUnavailableTheSiteTries": "When WebGPU is unavailable, the site tries a WebGL2 vertex-morph fallback. It approximates deformation from the same input history but does not retain compute simulation state or provide velocity visualization. If both paths fail, the content remains readable with a static background.",
     "sourceReproduction": "SOURCE & REPRODUCTION",
     "sourceCode": "Source Code",
-    "theRunningShaderRustEntryPointAnd": "The running shader, Rust entry point and browser controller are available below. The displayed measurements come from the current session; they are not historical performance data from company projects.",
+    "theRunningShaderRustEntryPointAnd": "The WGSL shaders, Rust renderer, browser controller and build instructions are available below.",
     "shapesSimulationRendering": "Shapes · simulation · rendering",
     "targetFunctionsComputePointSprites": "Target functions, compute, point sprites",
     "deviceBuffersPipelinesFrames": "Device · buffers · pipelines · frames",
@@ -76,7 +76,7 @@
   "study": {
     "text03OngoingExplorations": "03 / ONGOING EXPLORATIONS",
     "graphicsAnimationExperiments": "Graphics & animation experiments.",
-    "conceptDiagramOfReducingAMotionSequence": "Concept diagram of reducing a motion sequence to sparse targets. It does not show measured data or compression results.",
+    "conceptDiagramOfReducingAMotionSequence": "Concept diagram of representing FK animation with a smaller set of IK targets.",
     "approachAndValidationPlan": "Approach and validation plan",
     "extractHandAndFootPositionsAndPole": "Extract hand and foot positions and pole vectors from the bone hierarchy’s world transforms. The first step is to reconstruct the pose with Two-Bone IK and compare it with the original.",
     "selectKeysFromTargetTrajectoriesAndUse": "Select keys from target trajectories and use Lerp/Slerp interpolation as a baseline. Correction deltas would preserve rotations that IK alone cannot retain. The plan is to evaluate position and rotation error, ground contact and file size together.",
@@ -140,7 +140,7 @@
     "clipsHandledEntryAndReturnMovementsDuring": "IK positioned the hands during dealing, while animation clips handled the other movements. I skipped IK updates during clip playback so the two systems would not control the same bones at once.",
     "renderingRepeatedCards": "Rendering repeated cards",
     "cardsSharedGeometryAndMaterialThroughInstancedmesh": "Cards shared geometry and material through InstancedMesh. Per-instance UV regions selected the right card from an atlas, allowing different cards to be drawn through one mesh structure.",
-    "conceptDiagramOfCardRenderingWithShared": "Concept diagram of card rendering with shared geometry/material and per-instance transforms and UVs.",
+    "conceptDiagramOfCardRenderingWithShared": "Card rendering with shared geometry and materials, using per-instance positions and UVs.",
     "nextWebPlatforms": "NEXT / WEB PLATFORMS"
   },
   "rustRenderer": {
@@ -152,7 +152,6 @@
     "choosingRecoveryBehaviorByFailureType": "Choosing recovery behavior by failure type",
     "theProjectMovedRenderingFromProtopieS": "The project moved rendering from ProtoPie’s platform-specific DOM and native views into a shared GPU engine. I designed and implemented the architecture and core rendering paths of a 2D vector renderer built with Rust and wgpu.",
     "iSeparatedResponsibilitiesForScenesRenderCommands": "I separated responsibilities for scenes, render commands, geometry processing and GPU resource management, and defined rendering rules shared across platforms.",
-    "thisWorkWasStillInDevelopmentBefore": "This work was still in development before release across all platforms. The background particles were created separately for this portfolio.",
     "decision01Consistency": "DECISION 01 / CONSISTENCY",
     "interpretingStrokeWidthOrAlignmentIndependentlyAt": "Interpreting stroke width or alignment independently at each stage can make calculated bounds disagree with the rendered result. I designed a shared interpretation that is computed once and reused across stages.",
     "conceptDiagramOfSharingStrokeInterpretationAcross": "Concept diagram of sharing stroke interpretation across operations.",

@@ -63,7 +63,7 @@
     "whenWebgpuIsUnavailableTheSiteTries": "Wenn WebGPU nicht verfügbar ist, versucht die Website einen WebGL2-Fallback mit Vertex-Morphing. Er nähert die Verformung aus derselben Eingabehistorie an, hält aber keinen Compute-Simulationszustand und bietet keine Geschwindigkeitsansicht. Falls beide Pfade ausfallen, bleiben die Inhalte mit einem statischen Hintergrund lesbar.",
     "sourceReproduction": "QUELLCODE & REPRODUKTION",
     "sourceCode": "Quellcode",
-    "theRunningShaderRustEntryPointAnd": "Der verwendete Shader, der Rust-Einstiegspunkt und die Browser-Steuerung sind unten verfügbar. Die angezeigten Messwerte stammen aus der aktuellen Sitzung, nicht aus früheren Unternehmensprojekten.",
+    "theRunningShaderRustEntryPointAnd": "WGSL-Shader, Rust-Renderer, Browser-Controller und Build-Anleitung sind hier verfügbar.",
     "shapesSimulationRendering": "Formen · Simulation · Rendering",
     "targetFunctionsComputePointSprites": "Zielfunktionen, Compute, Point Sprites",
     "deviceBuffersPipelinesFrames": "Gerät · Puffer · Pipelines · Frames",
@@ -76,7 +76,7 @@
   "study": {
     "text03OngoingExplorations": "03 / LAUFENDE EXPERIMENTE",
     "graphicsAnimationExperiments": "Experimente mit Grafik und Animation.",
-    "conceptDiagramOfReducingAMotionSequence": "Schematische Darstellung der Reduktion einer Bewegungssequenz auf wenige Ziele. Keine Messdaten oder Kompressionsergebnisse.",
+    "conceptDiagramOfReducingAMotionSequence": "Konzeptdiagramm zur Darstellung einer FK-Animation mit weniger IK-Zielen.",
     "approachAndValidationPlan": "Ansatz und Validierungsplan",
     "extractHandAndFootPositionsAndPole": "Aus den Welttransformationen der Bone-Hierarchie werden Hand- und Fußpositionen sowie Pole-Vektoren abgeleitet. Zunächst soll die Pose mit Two-Bone IK rekonstruiert und mit dem Original verglichen werden.",
     "selectKeysFromTargetTrajectoriesAndUse": "Aus den Zieltrajektorien werden Schlüsselwerte ausgewählt. Lerp- und Slerp-Interpolation dienen als Vergleichsbasis. Korrekturdeltas sollen Rotationen erhalten, die sich mit IK allein nicht bewahren lassen. Geplant ist eine gemeinsame Auswertung von Positions- und Rotationsfehlern, Bodenkontakt und Dateigröße.",
@@ -140,7 +140,7 @@
     "clipsHandledEntryAndReturnMovementsDuring": "Beim Austeilen wurden die Hände per IK positioniert, die übrigen Bewegungen liefen über Animationsclips. Während der Clip-Wiedergabe habe ich IK-Updates ausgesetzt, damit beide Verfahren nicht dieselben Bones gleichzeitig steuern.",
     "renderingRepeatedCards": "Wiederkehrende Karten rendern",
     "cardsSharedGeometryAndMaterialThroughInstancedmesh": "Die Karten teilten sich über InstancedMesh Geometrie und Material. Instanzspezifische UV-Bereiche wählten die jeweilige Karte aus einem Atlas. So konnten unterschiedliche Karten mit einer gemeinsamen Mesh-Struktur dargestellt werden.",
-    "conceptDiagramOfCardRenderingWithShared": "Schematische Darstellung des Karten-Renderings mit gemeinsamer Geometrie und gemeinsamem Material sowie instanzspezifischen Transformationen und UVs.",
+    "conceptDiagramOfCardRenderingWithShared": "Karten-Rendering mit gemeinsamer Geometrie und gemeinsamen Materialien sowie individuellen Positionen und UV-Koordinaten pro Instanz.",
     "nextWebPlatforms": "WEITER / WEBPLATTFORMEN"
   },
   "rustRenderer": {
@@ -152,7 +152,6 @@
     "choosingRecoveryBehaviorByFailureType": "Fehlerabhängige Wiederherstellung",
     "theProjectMovedRenderingFromProtopieS": "Das Projekt führte das Rendering von ProtoPies plattformspezifischen DOM- und nativen Ansichten in einer gemeinsamen GPU-Engine zusammen. Ich habe die Architektur und die zentralen Rendering-Pfade eines 2D-Vektorrenderers mit Rust und wgpu entworfen und implementiert.",
     "iSeparatedResponsibilitiesForScenesRenderCommands": "Ich habe die Verantwortlichkeiten für Szenen, Render-Befehle, Geometrieverarbeitung und GPU-Ressourcen getrennt und gemeinsame Rendering-Regeln für die Plattformen definiert.",
-    "thisWorkWasStillInDevelopmentBefore": "Diese Arbeit befand sich vor der Veröffentlichung auf allen Plattformen noch in Entwicklung. Die Hintergrundpartikel wurden separat für dieses Portfolio erstellt.",
     "decision01Consistency": "ENTSCHEIDUNG 01 / KONSISTENZ",
     "interpretingStrokeWidthOrAlignmentIndependentlyAt": "Wenn Strichbreite und -ausrichtung in jedem Verarbeitungsschritt separat interpretiert werden, können berechnete Grenzen vom sichtbaren Ergebnis abweichen. Ich habe eine gemeinsame Interpretation entworfen, die einmal berechnet und in mehreren Schritten verwendet wird.",
     "conceptDiagramOfSharingStrokeInterpretationAcross": "Schematische Darstellung einer gemeinsam genutzten Strichinterpretation.",
