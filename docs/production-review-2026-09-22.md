@@ -100,11 +100,24 @@ WebGL 캡처 방식은 [WebGL Fundamentals의 같은 프레임 내 캡처 설명
 
 회귀 테스트는 이전 구현에서 실제로 실패하는 경로를 확인한 뒤 수정했습니다. VM 테스트는 브라우저 event/RAF/GPU adapter 경계를 대체하며, 실제 GPU 드라이버의 동작 자체를 검증하지는 않습니다. 화면 기록은 로컬 `qa/production-review-2026-09-22/`에 있으며 공개 빌드에 포함하지 않습니다.
 
-## 공개 저장소 / 배포 상태
+## 수정 위치
 
-기존 remote는 `MYM92839/sookieme`이며 공개 상태지만 비어 있었습니다. CLI와 Chrome은 `DOMO928`으로 로그인되어 있고 해당 저장소에 쓰기 권한이 없습니다. Codex GitHub 연결의 repository metadata에는 push 가능으로 표시되지만 실제 create-file 요청은 403 `Resource not accessible by integration`으로 거절됐습니다. 사용자가 현재 계정의 `DOMO928/sookieme` 공개 저장소 생성을 선택했습니다. 공통 푸터는 이 주소로 연결합니다. 예전 개발 이력을 함께 게시하지 않고, 검증한 현재 파일로 최초 공개 커밋을 만듭니다.
+- [프레임 저장·runtime 제어](../src/graphics/controller.ts#L182), [캡처 함수](../src/graphics/controller.ts#L362)
+- [WebGL 생성 실패 정리](../src/graphics/webgl.ts#L66), [context loss](../src/graphics/webgl.ts#L111), [최종 해제](../src/graphics/webgl.ts#L158)
+- [영상 정지 원인 구분](../src/interactions/media.ts#L16), [환경 설정 변경](../src/interactions/media.ts#L58)
+- [청크 로드 실패 처리](../src/components/GraphicsStage.tsx#L29), [Lab 초기 컨트롤](../src/content/pages/lab-field-form.tsx#L31)
+- [공통 GitHub 푸터](../src/components/SiteFooter.tsx#L10), [preview MIME](../scripts/serve.mjs#L48)
+- [graphics 회귀 테스트](../tests/graphics-lifecycle.test.mjs), [WebGL 회귀 테스트](../tests/webgl-lifecycle.test.mjs), [media 회귀 테스트](../tests/media-lifecycle.test.mjs)
 
-최종 게시·배포 결과는 확인 후 이 절에 기록합니다.
+## 공개 저장소 / 배포 결과
+
+- 공개 저장소: [DOMO928/sookieme](https://github.com/DOMO928/sookieme). 검토한 현재 파일 140개를 최초 공개 커밋으로 게시했습니다. 이전 개발 이력은 로컬에 별도 보관하고 게시하지 않았습니다.
+- 코드 커밋: [`a627d97`](https://github.com/DOMO928/sookieme/commit/a627d9783bdd051f2db66b7f44a6f70903e0c6b1).
+- [GitHub Actions](https://github.com/DOMO928/sookieme/actions/runs/35705517136): Linux의 새 환경에서 npm ci → format → TypeScript → production build → 30 tests → Rust check → rustfmt 모두 성공했습니다.
+- Vercel production: `dpl_4Z2YLVgDbNVEUCGhA5J9WuH6Dxuk`, `READY`. [sookie.me](https://sookie.me/) 연결 완료.
+- 배포된 30개 콘텐츠 URL 모두 HTTP 200, 올바른 문서 언어와 GitHub 링크를 확인했습니다. 없는 URL은 404, 공개 WGSL은 text/plain, source.zip은 application/zip입니다.
+- 실제 도메인에서 Rust/wgpu 실행, Renderer 이동, canvas 한 개 유지, 새 푸터 링크와 콘솔 오류 없음까지 확인했습니다.
+- 이번 배포는 Vercel CLI로 수행했습니다. GitHub push 시 자동 배포 연결을 구성했다고 주장하지 않습니다.
 
 ## 검증 범위와 남은 점
 
@@ -112,4 +125,4 @@ WebGL 캡처 방식은 [WebGL Fundamentals의 같은 프레임 내 캡처 설명
 2. WebGL 실패·reduced-motion·hidden tab·비동기 초기화 경쟁은 회귀 테스트로 검증했습니다. OS GPU reset, 실제 장치 메모리 부족, WebGPU device loss는 강제로 재현하지 않았습니다.
 3. reduced-motion은 지원하지만 사용자 요청에 따라 별도 배경 정지 메뉴를 다시 추가하지 않았습니다. 전체 WCAG 적합성 인증을 주장하지 않습니다.
 4. Next의 `globalNotFound`는 현재 experimental 옵션입니다. 오류 페이지 정적 산출물은 검사하며, Next 업그레이드 때 재확인해야 합니다.
-5. GitHub Actions 설정은 추가했지만 원격 실행 결과는 저장소 업로드 후에만 확인할 수 있습니다. 그 전에는 로컬 검사 통과와 CI 통과를 구분합니다.
+5. GPU/DOM 생명주기 회귀 테스트는 CI에서 실행되지만, 화면 크기별 스크린샷과 실제 브라우저 검증은 이번 리뷰에서 수동으로 수행했습니다. 모든 시각 회귀가 자동 검출되는 구성은 아닙니다.
