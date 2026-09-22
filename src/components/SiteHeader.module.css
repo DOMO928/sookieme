@@ -1,0 +1,129 @@
+.header:global(.site-header) {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  column-gap: 34px;
+  height: 108px;
+  padding: 0 var(--margin);
+}
+.header .primary {
+  justify-self: start;
+  gap: 28px;
+  margin-left: 14px;
+}
+.header a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.header .primary a {
+  font-size: 13px;
+}
+.resume {
+  gap: 7px;
+  color: #bec3ca;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.resume:hover {
+  color: white;
+}
+.resume :global(.icon) {
+  width: 14px;
+  height: 14px;
+}
+.pdf {
+  color: #a1a8b3;
+  font-size: 9px;
+  letter-spacing: 0.03em;
+}
+.shortResume {
+  display: none;
+}
+.header :global(.language-switch) {
+  gap: 2px;
+}
+.header :global(.language-switch) a {
+  padding: 10px 9px;
+  color: #aeb5bf;
+  font-size: 12px;
+}
+.header :global(.language-switch) a:last-child {
+  padding-right: 0;
+}
+.header :global(.language-switch) a[aria-current='true'] {
+  color: #f0f0ed;
+  text-decoration: underline;
+  text-underline-offset: 7px;
+  text-decoration-thickness: 1px;
+}
+.header :global(.language-switch) a:hover {
+  color: white;
+}
+@media (max-width: 800px) {
+  .header:global(.site-header) {
+    column-gap: 18px;
+  }
+  .header .primary {
+    margin-left: 0;
+    gap: 20px;
+  }
+}
+@media (max-width: 650px) {
+  .header:global(.site-header) {
+    grid-template-columns: auto 1fr;
+    height: auto;
+    column-gap: 12px;
+    row-gap: 2px;
+    padding-top: 19px;
+    padding-bottom: 12px;
+  }
+  .header :global(.wordmark) {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 24px;
+  }
+  .header .primary {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    gap: 24px;
+  }
+  .header .primary a {
+    font-size: 12px;
+  }
+  .header .resume {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 11px;
+    gap: 6px;
+  }
+  .fullResume {
+    display: none;
+  }
+  .shortResume {
+    display: inline;
+  }
+  .pdf {
+    font-size: 8px;
+  }
+  .resume :global(.icon) {
+    width: 11px;
+    height: 11px;
+  }
+  .header :global(.language-switch) {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    gap: 0;
+  }
+  .header :global(.language-switch) a {
+    font-size: 11px;
+    padding: 10px 8px;
+  }
+}
+@media print {
+  .header:global(.site-header) {
+    display: none;
+  }
+}

@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+dist
+public
+src/graphics/wasm
+graphics-rust
+qa
+next-env.d.ts

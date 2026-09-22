@@ -1,0 +1,19 @@
+[package]
+name = "field-form"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+[lib]
+crate-type = ["cdylib"]
+[dependencies]
+wgpu = { version = "=29.0.3", default-features = false, features = ["std", "webgpu", "wgsl"] }
+wasm-bindgen = "=0.2.123"
+wasm-bindgen-futures = "=0.4.73"
+web-sys = { version = "=0.3.100", features = ["HtmlCanvasElement", "console"] }
+bytemuck = { version = "1.25.0", features = ["derive"] }
+[profile.release]
+lto = true
+opt-level = "s"
+codegen-units = 1
+panic = "abort"
+strip = true

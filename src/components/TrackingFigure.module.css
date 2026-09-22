@@ -1,0 +1,56 @@
+.figure {
+  margin: 36px 0;
+  padding: 24px 0 0;
+  border-block: 1px solid var(--line);
+  break-inside: avoid;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  color: #c6cbd2;
+  font:
+    10px/1.5 Inter,
+    sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.heading span:last-child {
+  color: #949da9;
+}
+
+.figure picture {
+  display: block;
+  padding: 30px 0;
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.figure figcaption {
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  color: #a8b0bc;
+  font:
+    12px/1.8 SookieSans,
+    Inter,
+    sans-serif;
+  word-break: keep-all;
+}
+
+@media (max-width: 900px) {
+  .figure picture {
+    max-width: 350px;
+    margin-inline: auto;
+    padding-block: 26px;
+  }
+
+  .figure img {
+    aspect-ratio: 297 / 538;
+  }
+}

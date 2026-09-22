@@ -1,0 +1,14 @@
+node_modules
+graphics-rust/target
+dist
+.astro
+.vercel
+.env*
+qa
+tests
+design-qa.md
+*.log
+
+.next/
+out/
+*.tsbuildinfo
