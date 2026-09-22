@@ -11,6 +11,7 @@
   font-display: swap;
 }
 :root {
+  color-scheme: dark;
   font-family: Inter, SookieSans, sans-serif;
   color: #f0f0ed;
   background: #0c0d0f;
@@ -19,6 +20,7 @@
   --muted: #a9aaae;
   --line: #35373b;
   --margin: clamp(24px, 4.2vw, 72px);
+  --scroll-thumb: #6d7581;
 }
 * {
   box-sizing: border-box;
@@ -26,6 +28,73 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 110px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) #0c0d0f;
+  scrollbar-gutter: stable;
+}
+.diagram-scroll,
+.gallery-track,
+.code-example pre,
+.data-table {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+/* Older WebKit uses pseudo-elements; modern engines use the native styles above. */
+@supports not (scrollbar-color: #6d7581 transparent) {
+  :is(html, .diagram-scroll, .gallery-track, .code-example pre, .data-table)::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  :is(
+    html,
+    .diagram-scroll,
+    .gallery-track,
+    .code-example pre,
+    .data-table
+  )::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  :is(
+    html,
+    .diagram-scroll,
+    .gallery-track,
+    .code-example pre,
+    .data-table
+  )::-webkit-scrollbar-thumb {
+    min-height: 40px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--scroll-thumb);
+    background-clip: padding-box;
+  }
+  :is(
+      html,
+      .diagram-scroll,
+      .gallery-track,
+      .code-example pre,
+      .data-table
+    )::-webkit-scrollbar-thumb:hover {
+    background-color: #959faa;
+  }
+  :is(
+    html,
+    .diagram-scroll,
+    .gallery-track,
+    .code-example pre,
+    .data-table
+  )::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+@media (forced-colors: active) {
+  html,
+  .diagram-scroll,
+  .gallery-track,
+  .code-example pre,
+  .data-table {
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+  }
 }
 body {
   margin: 0;
@@ -1658,8 +1727,6 @@ body:not([data-kind='home']) .canvas-controls {
 
 .diagram-scroll {
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #616979 #181c22;
 }
 .diagram-scroll:focus-visible {
   outline: 1px solid #aeb8c7;
@@ -2496,8 +2563,6 @@ body[data-shape='8'] #field-stage {
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scroll-padding: 0;
-  scrollbar-width: thin;
-  scrollbar-color: #58616d #16191e;
   padding-bottom: 16px;
 }
 .gallery-slide {
