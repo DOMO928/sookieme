@@ -1,64 +1,84 @@
-# Sookie — Field / Form
+# sookie.me
 
-Personal graphics portfolio for Jaesook Jeong. Next.js App Router and React, with statically generated content and a persistent Rust / wgpu canvas, plus an explicit WebGL2 compatibility path.
+My portfolio for web, graphics and XR work.
 
-[GitHub](https://github.com/DOMO928/sookieme) · [Live site](https://sookie.me/) · [English](https://sookie.me/en/) · [Deutsch](https://sookie.me/de/)
+[Visit the site](https://sookie.me/) · [English](https://sookie.me/en/) · [Deutsch](https://sookie.me/de/)
 
-## Run
+The background is a particle renderer called **Field / Form**. Each page has its own shape, and the particles move between them as you navigate. The canvas stays in place while the page content changes around it.
 
-Node 24 LTS. `npm ci`, `npm run dev`. `npm run build` creates the static export in `out`. `npm run preview` serves that export at localhost:4416. `npm run check` generates Next.js route types and validates TypeScript. `npm test` checks routing, public assets, graphics lifecycle and media behavior after building. `npm run format:check` validates the shared source format. `npm run check:rust` checks the WASM target without regenerating assets.
+## Running locally
 
-Use npm and the committed `package-lock.json`; `.nvmrc` records the Node version. GitHub Actions runs formatting, TypeScript, build, tests and Rust checks on pushes to main and pull requests. Generated public source downloads are rebuilt by `prebuild` and are not committed. Local deployment configuration, environment files, QA captures and build caches are ignored.
+Use Node.js 24 and npm. The Node version is also in `.nvmrc`.
 
-The small generated WASM module and JS glue are included under `src/graphics/wasm`, so deployment does not need Rust. To rebuild it: install a current stable Rust toolchain, `rustup target add wasm32-unknown-unknown`, install `wasm-bindgen-cli --version 0.2.123 --locked`, then `npm run build:wasm`.
+```sh
+npm ci
+npm run dev
+```
 
-## Graphics
+The dev server runs at [localhost:4321](http://localhost:4321).
 
-- Rust / wgpu 29.0.3 creates the WebGPU device, storage and uniform buffers, compute and render pipelines.
-- Stable integer-hash samples parameterize ten procedural forms. They are not optimal transport samples.
-- Each compute invocation updates its own position / velocity. There is no neighbor dependency; a single state buffer is valid here. The rendering pass reads the same buffer.
-- Spring attraction, normal correction, two frequencies of an analytic curl field, and a sparse drifting subset produce stateful, interruptible morphs. Cell IDs are fixed; cell-local circulation preserves the lattice core while a separate 9% subset drifts around it. Surface deformation and ambient motion have independent gains across all ten forms. A bounded six-sample pointer history drives tangential compute forces and spring return; the lattice core keeps its centers and responds through sprite size and exposure, while its ambient subset also responds to directional forces. The WebGL fallback approximates the trail analytically. Slow object rotation and scroll-driven layer separation share the same GPU input block.
-- Six-vertex instanced sprites use depth-dependent radius and opacity. This is not a full-screen DOF pass, Gaussian Splatting or physically correct transparent compositing.
-- The WebGL2 fallback uses analytic vertex interpolation, not a compute simulation. Advanced debug views are unavailable there.
-- Hidden tabs pause rendering; reduced motion snaps to the requested form. The DOM, canvas identity and GPU lifetime are separate concerns.
+To preview a production build:
 
-## Content provenance
+```sh
+npm run build
+npm run preview
+```
 
-Past experience is sourced from the résumé, preserved development documents and confirmed work descriptions. Historical company source, internal API notes and development archives are excluded from this repository and its public output. No executable historical renderer source was available. Field / Form is a new, independent implementation, developed with AI assistance. No historical performance measurements were invented.
+This generates the static site in `out/` and serves it at [localhost:4416](http://localhost:4416).
 
-Visual references: Pmndrs GPGPU Curl Noise DOF, Moon Kyungwon & Jeon Joonho's Phantom Garden stills, Daiki Fujita, FIELD.IO. Their assets and code are not copied into this site.
+## How it works
 
-Fonts: Inter and Pretendard (OFL); the modified glyph subset is renamed Sookie Sans. Icons: Phosphor (MIT). See public/documents license files. Original Field / Form source: MIT. Project recordings, screenshots, photographs, résumé and third-party assets are excluded from that source-code license; their owners retain the respective rights. Third-party dependencies retain their own licenses.
+The site uses Next.js App Router, React and TypeScript. Pages are statically generated, with Korean, English and German copy handled by `next-intl`. Text, navigation and project media are regular HTML; the graphics run separately behind them.
 
-## Public build
+Field / Form is written in Rust with wgpu and WGSL, compiled to WebAssembly. A compute shader updates particle positions and velocities, combining spring forces toward the target shape with curl-driven motion. Mouse movement and scrolling also feed into the renderer. Keeping the particle state across navigation lets a transition change direction before the previous one finishes.
 
-Vercel's Next.js adapter packages the static export using `.next`; `out` is the portable export for local preview. Only this portfolio project is deployed. Production publishing currently uses the Vercel CLI (`vercel deploy --prod`); automatic GitHub deployments are not configured by this repository. `scripts/prepare-public.mjs` packages the independent graphics source and never includes authentication, local environment files, or unrelated company code.
+WebGPU handles the simulation and rendering. The WebGL2 fallback uses vertex-based animation, and a static image is used when neither backend is available. Rendering pauses in hidden tabs and respects reduced-motion preferences.
 
-## Editing content
+You can try the forms, switch rendering paths and inspect the implementation in the [Field / Form lab](https://sookie.me/en/lab/field-form/).
 
-Home links to Renderer, Interactive and Study. `src/data/studies.ts` holds ordered study metadata; `src/content/pages/study.tsx` adds each study’s visual explanation. `src/components/TechnicalDiagram.tsx` contains newly drawn, labelled technical explanations rather than fabricated product screenshots or benchmark graphs.
+## Working on the site
 
-The XR camera-pose diagram is generated by Graphviz (`npm run diagram:xr`). Edit `scripts/generate-tracking-diagram.mjs` and commit both generated SVGs. `TrackingFigure` selects a vertical layout below 900 px; no diagram library is shipped to the browser. The diagram describes the preserved AlvaAR integration, not every exhibition’s tracking stack or SLAM internals. Keep the Gangwon gallery in its source sequence: instructions, camera view, AR overlay, then the physical/AR photo pair. The public-build test protects this order in all three languages.
+- [`src/content/pages/`](src/content/pages/) — page layouts and project content.
+- [`src/i18n/locales/`](src/i18n/locales/) — Korean, English and German copy.
+- [`src/graphics/`](src/graphics/) — browser controller, WebGL2 fallback and compiled WASM.
+- [`graphics-rust/`](graphics-rust/) — Rust renderer and WGSL shaders.
+- [`public/media/`](public/media/) — project recordings and images.
 
-Company recordings: `ProjectVideo` in the React case-study pages uses H.264 MP4 videos and WebP posters under `public/media`. The four user-supplied recordings are compressed MP4s with their original framing; encoded dimensions are recorded on each video element. Use the encoded width/height to preserve aspect ratio. Videos load on playback, loop while visible, pause offscreen, and retain native playback/fullscreen controls. Reduced-motion and data-saving preferences disable automatic playback. Original MOV files stay outside the deployed project.
+For routing, resource lifetime and content maintenance, see [Architecture and maintenance](docs/architecture.md).
 
-## Languages
+The checks used in CI are available locally:
 
-Korean keeps the existing URLs. English uses `/en/` and German `/de/`.
-The optional catch-all App Router route statically generates every registered page and locale. Its root layout receives the complete route, so the initial HTML has the correct language, metadata and fallback graphic without JavaScript.
+```sh
+npm run format:check
+npm run check
+npm run build
+npm test
+```
 
-`next-intl` formats stable message keys from `src/i18n/locales/ko.json`, `en.json` and `de.json` in Server Components. The catalog is not sent to the browser. Copy can be edited without changing its key or reparsing rendered HTML. Small runtime-only Lab labels live in `src/i18n/runtime.ts`.
+Tests read the generated site, so run the build first. CI also checks the Rust target and Rust formatting.
 
-Add page components to `src/content/registry.ts`, public paths to `src/i18n/routes.ts`, and the corresponding form to `src/content/route-state.ts`. Tests validate every locale, internal link, anchor, metadata alternate, route payload and form assignment. The résumé remains the original Korean PDF and is labeled accordingly. Run `scripts/subset-font.py` after copy changes, then build and test.
+### Rebuilding the renderer
 
-## Runtime ownership
+The compiled WASM is committed, so Rust is only needed when changing the renderer. With a stable Rust toolchain installed through rustup:
 
-`GraphicsStage` acquires one graphics runtime. A release lease bridges React layout changes and Strict Mode cleanup/setup, keeping the same canvas and GPU resources across route and language transitions. Permanent unmount aborts listeners, disconnects observers, cancels animation and destroys the GPU device. An initialization epoch disposes stale asynchronous WebGPU results if the selected backend changes before startup completes.
+```sh
+rustup target add wasm32-unknown-unknown
+cargo install wasm-bindgen-cli --version 0.2.123 --locked
+npm run build:wasm
+```
 
-`PageBehaviors` installs and removes video and gallery behavior on navigation. Videos retain native controls, respect live reduced-motion/data-saving changes, and pause when hidden. Programmatic visibility pauses and intentional user pauses are tracked separately. The language picker uses real Next.js links and preserves the current query and section.
+The `wasm-bindgen-cli` version needs to match the crate version in [`graphics-rust/Cargo.toml`](graphics-rust/Cargo.toml). Commit the regenerated files in `src/graphics/wasm/` with the Rust changes, then rebuild the site.
 
-Project section links remain native anchors. `setupCaseNavigation` marks the section being read and reveals its link in the horizontal menu. Keyboard focus reveals the focused link without moving the reading position; activating a link still uses native anchor navigation. Listeners, observers and animation frames are disposed on route changes. Project anchor offsets belong to the sections, not the root scrollport, so the sticky menu can retain visible keyboard focus.
+## Deployment
 
-The shared footer links to this repository. Lab controls are disabled until their runtime is attached; WebGL captures render and read the drawing buffer in the same animation frame. The WebGL context is released on final teardown, and context loss switches to the static fallback even when no animation frame is pending.
+The site is hosted on Vercel. Production deployments currently use `vercel deploy --prod` from this directory; GitHub pushes run CI but do not trigger a deployment.
 
-See [production review](docs/production-review-2026-09-22.md), [architecture and maintenance](docs/architecture.md) and [migration validation](docs/migration-validation.md) for the routing choice and checks.
+Vercel uses the Next.js preset and `.next` output directory. The separate `out/` directory is the portable static export used for local preview.
+
+## Credits and license
+
+The visual direction draws on the Pmndrs curl-noise example and Moon Kyungwon & Jeon Joonho’s _Phantom Garden_. More background is included in the [Field / Form notes](https://sookie.me/en/lab/field-form/#implementation).
+
+Fonts are [Inter](public/documents/inter-LICENSE.txt) and [Pretendard](public/documents/pretendard-LICENSE.txt), with the local Pretendard subset renamed Sookie Sans. Icons are from [Phosphor](public/documents/phosphor-LICENSE.txt).
+
+The independent Field / Form implementation is available under the [MIT license](LICENSE). Project recordings, screenshots, photographs, the résumé and third-party assets are not covered by that license.
