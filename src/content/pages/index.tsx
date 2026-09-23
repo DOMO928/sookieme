@@ -19,7 +19,7 @@ export default function Home({ locale }: { locale: Locale }) {
           <p className="home-description">Frontend &amp; Graphics Engineer</p>
           <LocalLink className="quiet-link" href="/about/" locale={locale}>
             {t('index.aboutMe')}
-            <Icon locale={locale} name="arrow-up-right" />
+            <Icon name="arrow-up-right" />
           </LocalLink>
         </div>
         <div className="work-index" id="work">
@@ -38,7 +38,7 @@ export default function Home({ locale }: { locale: Locale }) {
               <strong>Renderer</strong>
               <small>{t('index.renderingSystemsProtopie')}</small>
             </span>
-            <Icon locale={locale} name="arrow-up-right" />
+            <Icon name="arrow-up-right" />
           </LocalLink>
           <LocalLink
             className="work-link"
@@ -51,15 +51,15 @@ export default function Home({ locale }: { locale: Locale }) {
               <strong>Interactive</strong>
               <small>3D apps · Web platforms · XR</small>
             </span>
-            <Icon locale={locale} name="arrow-up-right" />
+            <Icon name="arrow-up-right" />
           </LocalLink>
           <LocalLink className="work-link" href="/study/" data-project="3" locale={locale}>
             <span className="work-number">03</span>
             <span>
               <strong>Study</strong>
-              <small>{t('index.graphicsAnimationExperiments')}</small>
+              <small>{t('index.studyTopics')}</small>
             </span>
-            <Icon locale={locale} name="arrow-up-right" />
+            <Icon name="arrow-up-right" />
           </LocalLink>
         </div>
       </section>

@@ -84,6 +84,7 @@ test('downloaded graphics source contains a reproducible crate and the running s
     'graphics-rust/Cargo.toml',
     'graphics-rust/Cargo.lock',
     'graphics-rust/src/lib.rs',
+    'src/graphics/webgl-shaders.ts',
     'scripts/build-wasm.mjs',
     'LICENSE',
   ])

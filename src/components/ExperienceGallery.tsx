@@ -12,40 +12,40 @@ export default function ExperienceGallery(props: Props) {
     {
       image: 1,
       title: t('experienceGallery.qrInstructions'),
-      description: t('experienceGallery.openTheArExperienceFromTheOn'),
-      alt: t('experienceGallery.arInstructionsAndAQrCodeOn'),
+      description: t('experienceGallery.instructionsDescription'),
+      alt: t('experienceGallery.instructionsAlt'),
       width: 750,
       height: 1000,
     },
     {
       image: 2,
       title: t('experienceGallery.pointTheCamera'),
-      description: t('experienceGallery.thePhoneDisplaysTheRealLocation'),
-      alt: t('experienceGallery.phoneAimedAtTheMoonSculptureWith'),
+      description: t('experienceGallery.cameraDescription'),
+      alt: t('experienceGallery.cameraAlt'),
       width: 750,
       height: 1000,
     },
     {
       image: 3,
       title: t('experienceGallery.arOverlay'),
-      description: t('experienceGallery.aRabbitCharacterAppearsInTheCamera'),
-      alt: t('experienceGallery.phoneArViewShowingARabbitCharacter'),
+      description: t('experienceGallery.overlayDescription'),
+      alt: t('experienceGallery.overlayAlt'),
       width: 750,
       height: 1000,
     },
     {
       image: 4,
       title: t('experienceGallery.physicalSpace'),
-      description: t('experienceGallery.theLocationWithoutArContent'),
-      alt: t('experienceGallery.theMoonSculptureAndBuildingsAtGangwon'),
+      description: t('experienceGallery.physicalSpaceDescription'),
+      alt: t('experienceGallery.physicalSpaceAlt'),
       width: 750,
       height: 999,
     },
     {
       image: 5,
       title: t('experienceGallery.arPhoto'),
-      description: t('experienceGallery.theSameLocationPhotographedWithTheAr'),
-      alt: t('experienceGallery.arPhotoWithAVirtualRabbitOn'),
+      description: t('experienceGallery.arPhotoDescription'),
+      alt: t('experienceGallery.arPhotoAlt'),
       width: 636,
       height: 1200,
     },
@@ -56,7 +56,7 @@ export default function ExperienceGallery(props: Props) {
       data-gallery
       role="region"
       aria-roledescription="carousel"
-      aria-label={t('experienceGallery.gangwonGamyeongArExperiencePhotos')}
+      aria-label={t('experienceGallery.galleryLabel')}
     >
       <div className="gallery-toolbar">
         <span>{t('experienceGallery.onSiteExperience')}</span>
@@ -70,7 +70,7 @@ export default function ExperienceGallery(props: Props) {
             aria-label={t('experienceGallery.previousExperiencePhoto')}
             aria-controls="gangwon-photos"
           >
-            <Icon locale={locale} name="arrow-left" />
+            <Icon name="arrow-left" />
           </button>
           <button
             type="button"
@@ -78,7 +78,7 @@ export default function ExperienceGallery(props: Props) {
             aria-label={t('experienceGallery.nextExperiencePhoto')}
             aria-controls="gangwon-photos"
           >
-            <Icon locale={locale} name="arrow-right" />
+            <Icon name="arrow-right" />
           </button>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default function ExperienceGallery(props: Props) {
         className="gallery-track"
         id="gangwon-photos"
         tabIndex={0}
-        aria-label={t('experienceGallery.photoGalleryUseTheLeftRightArrow')}
+        aria-label={t('experienceGallery.keyboardInstructions')}
       >
         {photos.map((photo, i) => (
           <figure
@@ -132,7 +132,7 @@ export default function ExperienceGallery(props: Props) {
         >
           {t('experienceGallery.pinkkuNaverBlog')}
         </LocalLink>
-        <span>{t('experienceGallery.text14Aug2025SelectAPhotoTo')}</span>
+        <span>{t('experienceGallery.creditDateAndHint')}</span>
       </p>
     </div>
   );

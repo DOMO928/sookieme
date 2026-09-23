@@ -10,7 +10,7 @@ export class FieldRenderer {
     [Symbol.dispose](): void;
     static create(canvas: HTMLCanvasElement, count: number): Promise<FieldRenderer>;
     destroy(): void;
-    frame(time: number, dt: number, shape: number, px: number, py: number, active: number, width: number, height: number, mode: number, still: boolean, scroll: number, trail: Float32Array): boolean;
+    frame(time: number, delta_seconds: number, shape: number, pointer_x: number, pointer_y: number, pointer_strength: number, width: number, height: number, mode: number, still: boolean, scroll: number, trail: Float32Array): boolean;
     particle_count(): number;
     state_bytes(): number;
 }

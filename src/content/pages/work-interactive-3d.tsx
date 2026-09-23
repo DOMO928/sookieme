@@ -8,7 +8,7 @@ export function getMeta(locale: Locale) {
   const t = getTranslations(locale);
   return {
     title: 'Interactive — Sookie',
-    description: t('interactive-3d.text3dProductsRealTimeGamesMembershipServices'),
+    description: t('interactive-3d.description'),
     shape: formId.interactive,
     kind: 'project',
   };
@@ -21,10 +21,10 @@ export default function WorkInteractive3d({ locale }: { locale: Locale }) {
     <>
       <header className="collection-head">
         <LocalLink className="back-link" href="/#work" locale={locale}>
-          <Icon locale={locale} name="arrow-left" />
+          <Icon name="arrow-left" />
           {t('interactive-3d.allWork')}
         </LocalLink>
-        <p className="eyebrow">{t('interactive-3d.text02SelectedInteractiveWork')}</p>
+        <p className="eyebrow">{t('interactive-3d.category')}</p>
         <h1>Interactive</h1>
         <p className="collection-summary">Web apps · 3D · XR</p>
         <nav className="category-nav" aria-label={t('interactive-3d.projectCategories')}>
@@ -72,7 +72,7 @@ export default function WorkInteractive3d({ locale }: { locale: Locale }) {
                     </p>
                     <h3>
                       {project.title}
-                      <Icon locale={locale} name="arrow-up-right" />
+                      <Icon name="arrow-up-right" />
                     </h3>
                     <p className="case-description">{project.summary}</p>
                     <ul
@@ -105,7 +105,7 @@ export default function WorkInteractive3d({ locale }: { locale: Locale }) {
         <LocalLink className="next-project" href="/study/" data-project="3" locale={locale}>
           <small>{t('interactive-3d.next')}</small>
           <span>
-            Study <Icon locale={locale} name="arrow-right" />
+            Study <Icon name="arrow-right" />
           </span>
         </LocalLink>
       </div>

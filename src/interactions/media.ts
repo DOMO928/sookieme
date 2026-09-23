@@ -90,55 +90,63 @@ function setupGallery() {
     const next = gallery.querySelector<HTMLButtonElement>('[data-gallery-next]')!;
     const position = gallery.querySelector<HTMLElement>('[data-gallery-position]')!;
     gallery.querySelector<HTMLElement>('[data-gallery-controls]')!.hidden = false;
-    let active = 0;
-    const left = (slide: HTMLElement) =>
+    let activeIndex = 0;
+    const slideOffset = (slide: HTMLElement) =>
       slide.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
-    const sync = () => {
-      active = slides.reduce(
-        (best, slide, i) =>
-          Math.abs(left(slide) - track.scrollLeft) < Math.abs(left(slides[best]) - track.scrollLeft)
-            ? i
-            : best,
-        0,
-      );
+    const syncGallery = () => {
+      const trackLeft = track.getBoundingClientRect().left;
+      let nearestDistance = Infinity;
+      let lastVisibleIndex: number | undefined;
+
+      slides.forEach((slide, index) => {
+        const relativeLeft = slide.getBoundingClientRect().left - trackLeft;
+        const distance = Math.abs(relativeLeft);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          activeIndex = index;
+        }
+        if (relativeLeft < track.clientWidth - 2) lastVisibleIndex = index;
+      });
+
       previous.disabled = track.scrollLeft < 2;
       next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
-      const lastVisible = slides.reduce(
-        (last, slide, i) => (left(slide) < track.scrollLeft + track.clientWidth - 2 ? i : last),
-        active,
-      );
-      position.textContent = `${String(active + 1).padStart(2, '0')}${lastVisible > active ? '–' + String(lastVisible + 1).padStart(2, '0') : ''} / ${String(slides.length).padStart(2, '0')}`;
+      const lastIndex = lastVisibleIndex ?? activeIndex;
+      const first = String(activeIndex + 1).padStart(2, '0');
+      const last = String(lastIndex + 1).padStart(2, '0');
+      const total = String(slides.length).padStart(2, '0');
+      const range = lastIndex > activeIndex ? `${first}–${last}` : first;
+      position.textContent = `${range} / ${total}`;
     };
-    const step = (direction: number) => {
-      const index = Math.max(0, Math.min(slides.length - 1, active + direction));
+    const stepSlide = (direction: number) => {
+      const index = Math.max(0, Math.min(slides.length - 1, activeIndex + direction));
       track.scrollTo({
-        left: left(slides[index]),
+        left: slideOffset(slides[index]),
         behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
       });
     };
-    previous.addEventListener('click', () => step(-1), { signal });
-    next.addEventListener('click', () => step(1), { signal });
+    previous.addEventListener('click', () => stepSlide(-1), { signal });
+    next.addEventListener('click', () => stepSlide(1), { signal });
     track.addEventListener(
       'keydown',
       (event) => {
         if (event.target !== track) return;
         if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
           event.preventDefault();
-          step(event.key === 'ArrowRight' ? 1 : -1);
+          stepSlide(event.key === 'ArrowRight' ? 1 : -1);
         }
       },
       { signal },
     );
-    track.addEventListener('scroll', sync, { passive: true, signal });
-    window.addEventListener('resize', sync, { passive: true, signal });
-    sync();
+    track.addEventListener('scroll', syncGallery, { passive: true, signal });
+    window.addEventListener('resize', syncGallery, { passive: true, signal });
+    syncGallery();
   });
   return () => abort.abort();
 }
 
 export function setupPageMedia() {
-  const stopVideos = setupVideos(),
-    stopGallery = setupGallery();
+  const stopVideos = setupVideos();
+  const stopGallery = setupGallery();
   return () => {
     stopVideos();
     stopGallery();

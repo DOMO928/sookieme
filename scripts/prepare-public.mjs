@@ -6,6 +6,7 @@ for (const [source, name] of [
   ['graphics-rust/src/lib.rs', 'lib.rs'],
   ['src/graphics/controller.ts', 'controller.ts'],
   ['src/graphics/webgl.ts', 'webgl.ts'],
+  ['src/graphics/webgl-shaders.ts', 'webgl-shaders.ts'],
 ])
   await copyFile(source, `public/source/${name}.txt`);
 await rm('public/wasm', { recursive: true, force: true });
@@ -16,6 +17,7 @@ const sources = [
   'graphics-rust/src/field.wgsl',
   'src/graphics/controller.ts',
   'src/graphics/webgl.ts',
+  'src/graphics/webgl-shaders.ts',
   'src/graphics/forms.ts',
   'src/graphics/pointer.ts',
   'src/i18n/runtime.ts',

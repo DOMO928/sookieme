@@ -1,3 +1,4 @@
+use bytemuck::Zeroable;
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
@@ -7,13 +8,31 @@ use wgpu::util::DeviceExt;
 
 #[repr(C)]
 #[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
-struct Params {
-    frame: [f32; 4],
-    pointer: [f32; 4],
-    view: [f32; 4],
-    options: [f32; 4],
+struct FrameUniforms {
+    time: f32,
+    delta_time: f32,
+    shape: f32,
+    particle_count: f32,
+    pointer_position: [f32; 2],
+    pointer_strength: f32,
+    reset_particles: f32,
+    viewport: [f32; 2],
+    view_mode: f32,
+    motion_strength: f32,
+    scroll: f32,
+    padding: [f32; 3],
     trail: [[f32; 4]; 6],
 }
+
+// WGSL uniform layout: four 16-byte groups followed by six pointer samples.
+// Fail the build if a CPU-side edit moves a field across a GPU alignment boundary.
+const _: () = {
+    assert!(std::mem::size_of::<FrameUniforms>() == 160);
+    assert!(std::mem::offset_of!(FrameUniforms, pointer_position) == 16);
+    assert!(std::mem::offset_of!(FrameUniforms, viewport) == 32);
+    assert!(std::mem::offset_of!(FrameUniforms, scroll) == 48);
+    assert!(std::mem::offset_of!(FrameUniforms, trail) == 64);
+};
 
 /// GPU state is owned for the lifetime of the persistent canvas.
 #[wasm_bindgen]
@@ -22,7 +41,7 @@ pub struct FieldRenderer {
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
-    params: wgpu::Buffer,
+    uniform_buffer: wgpu::Buffer,
     states: wgpu::Buffer,
     compute: wgpu::ComputePipeline,
     render: wgpu::RenderPipeline,
@@ -98,15 +117,9 @@ impl FieldRenderer {
             usage: wgpu::BufferUsages::STORAGE,
             mapped_at_creation: false,
         });
-        let params = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        let uniform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some("Frame inputs / 160 bytes"),
-            contents: bytemuck::bytes_of(&Params {
-                frame: [0.; 4],
-                pointer: [0.; 4],
-                view: [0.; 4],
-                options: [0.; 4],
-                trail: [[0.; 4]; 6],
-            }),
+            contents: bytemuck::bytes_of(&FrameUniforms::zeroed()),
             usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         });
         let module = device.create_shader_module(wgpu::ShaderModuleDescriptor {
@@ -159,7 +172,7 @@ impl FieldRenderer {
             entries: &[
                 wgpu::BindGroupEntry {
                     binding: 0,
-                    resource: params.as_entire_binding(),
+                    resource: uniform_buffer.as_entire_binding(),
                 },
                 wgpu::BindGroupEntry {
                     binding: 1,
@@ -173,7 +186,7 @@ impl FieldRenderer {
             entries: &[
                 wgpu::BindGroupEntry {
                     binding: 0,
-                    resource: params.as_entire_binding(),
+                    resource: uniform_buffer.as_entire_binding(),
                 },
                 wgpu::BindGroupEntry {
                     binding: 2,
@@ -189,7 +202,7 @@ impl FieldRenderer {
             device,
             queue,
             config,
-            params,
+            uniform_buffer,
             states,
             compute,
             render,
@@ -203,11 +216,11 @@ impl FieldRenderer {
     pub fn frame(
         &mut self,
         time: f32,
-        dt: f32,
+        delta_seconds: f32,
         shape: f32,
-        px: f32,
-        py: f32,
-        active: f32,
+        pointer_x: f32,
+        pointer_y: f32,
+        pointer_strength: f32,
         width: u32,
         height: u32,
         mode: f32,
@@ -231,20 +244,23 @@ impl FieldRenderer {
         for (dst, src) in trail_data.iter_mut().zip(trail.chunks_exact(4)) {
             dst.copy_from_slice(src);
         }
-        let p = Params {
-            frame: [time, dt.clamp(0., 0.033), shape, self.count as f32],
-            pointer: [px, py, active, initial],
-            view: [
-                width as f32,
-                height as f32,
-                mode,
-                if still { 0. } else { 1. },
-            ],
-            options: [scroll, 0., 0., 0.],
+        let frame_uniforms = FrameUniforms {
+            time,
+            delta_time: delta_seconds.clamp(0., 0.033),
+            shape,
+            particle_count: self.count as f32,
+            pointer_position: [pointer_x, pointer_y],
+            pointer_strength,
+            reset_particles: initial,
+            viewport: [width as f32, height as f32],
+            view_mode: mode,
+            motion_strength: if still { 0. } else { 1. },
+            scroll,
+            padding: [0.; 3],
             trail: trail_data,
         };
         self.queue
-            .write_buffer(&self.params, 0, bytemuck::bytes_of(&p));
+            .write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&frame_uniforms));
         let output = match self.surface.get_current_texture() {
             wgpu::CurrentSurfaceTexture::Success(o)
             | wgpu::CurrentSurfaceTexture::Suboptimal(o) => o,
@@ -311,7 +327,7 @@ impl FieldRenderer {
     }
     pub fn destroy(&mut self) {
         self.states.destroy();
-        self.params.destroy();
+        self.uniform_buffer.destroy();
         self.device.destroy();
     }
 }

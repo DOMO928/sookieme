@@ -10,7 +10,7 @@ export function getStudies(locale: Locale) {
       year: '2026',
       status: t('studies.liveStudy'),
       stack: ['Rust', 'wgpu', 'WGSL', 'WebGPU'],
-      description: t('studies.theBackgroundOfThisSiteIsA'),
+      description: t('studies.fieldFormSummary'),
       href: '/lab/field-form/',
       action: t('studies.tryTheControls'),
     },
@@ -21,7 +21,7 @@ export function getStudies(locale: Locale) {
       year: '2026',
       status: t('studies.researchInProgress'),
       stack: ['Animation', 'FK / IK', t('studies.compression')],
-      description: t('studies.anAnimationCompressionExperimentThatReplacesPer'),
+      description: t('studies.codecSummary'),
     },
   ] as const;
 }

@@ -1,5 +1,5 @@
 import { ui, measurement, invalidated } from '../i18n/runtime';
-import { createFallback } from './webgl';
+import { createWebGLRenderer } from './webgl';
 import { validForm } from './forms';
 import { PointerHistory } from './pointer';
 export type FieldController = {
@@ -8,25 +8,19 @@ export type FieldController = {
   destroy: () => void;
 };
 function createField(stage: HTMLElement): FieldController {
-  const events = new AbortController();
-  const { signal } = events;
-  let disposed = false,
-    epoch = 0;
-  const pointerHistory = new PointerHistory();
-
-  type Engine = {
+  type Renderer = {
     frame: (
       time: number,
-      dt: number,
-      shape: number,
+      deltaSeconds: number,
+      shapeId: number,
       x: number,
       y: number,
-      active: number,
+      pointerActive: number,
       width: number,
       height: number,
-      mode: number,
+      viewMode: number,
       still: boolean,
-      scroll: number,
+      scrollProgress: number,
       trail: Float32Array,
     ) => boolean;
     particle_count: () => number;
@@ -34,43 +28,57 @@ function createField(stage: HTMLElement): FieldController {
     destroy: () => void;
     free?: () => void;
   };
-  let engine: Engine | undefined;
+  const events = new AbortController();
+  const { signal } = events;
+  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+  const pointerHistory = new PointerHistory();
+
   let canvas = document.createElement('canvas');
   canvas.id = 'field';
   stage.prepend(canvas);
-  let loading = false,
-    failed = false,
-    reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let shape = 0,
-    mode = 0,
-    raf = 0,
-    last = 0,
-    elapsed = 0,
-    frameCount = 0,
-    dirty = true,
-    snap = true;
-  let px = 0,
-    py = 0,
-    active = 0,
-    tx = 0,
-    ty = 0,
-    pointerStrength = 0,
-    scroll = 0,
-    scrollTarget = 0,
-    backend = 'Preparing',
-    backendDetail = '';
-  let preferredBackend = 'auto';
+
+  // Renderer ownership. An old asynchronous startup must never replace a newer one.
+  let renderer: Renderer | undefined;
+  let disposed = false;
+  let initializationId = 0;
+  let startingRenderer = false;
+  let rendererFailed = false;
+  let backendPreference = 'auto';
+  let backendLabel = 'Preparing';
+  let backendDetail = '';
+
+  // Animation state survives route changes; the target shape does not.
+  let shapeId = 0;
+  let viewMode = 0;
+  let frameRequest = 0;
+  let lastFrameTime = 0;
+  let elapsedTime = 0;
+  let frameCount = 0;
+  let needsRender = true;
+  let resetParticles = true;
+  let reducedMotion = motionPreference.matches;
   let captureRequested = false;
-  let samples: number[] = [];
-  let sampleStarted = 0,
-    recording = false,
-    hasMeasurement = false,
-    recordSamples: number[] = [];
-  const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
-  function routeShape() {
+
+  let pointerX = 0;
+  let pointerY = 0;
+  let pointerTargetX = 0;
+  let pointerTargetY = 0;
+  let pointerActive = 0;
+  let pointerStrength = 0;
+  let scrollProgress = 0;
+  let targetScrollProgress = 0;
+  let revealObserver: IntersectionObserver | undefined;
+
+  let frameIntervals: number[] = [];
+  let measurementStarted = 0;
+  let measuring = false;
+  let hasMeasurement = false;
+  let measurementIntervals: number[] = [];
+
+  function readRouteShape() {
     return validForm(Number(document.body.dataset.shape));
   }
-  function size() {
+  function resizeCanvas() {
     const dpr = Math.min(devicePixelRatio, innerWidth < 650 ? 1.25 : 1.5);
     const width = Math.max(1, Math.round(innerWidth * dpr));
     const height = Math.max(1, Math.round(innerHeight * dpr));
@@ -78,106 +86,53 @@ function createField(stage: HTMLElement): FieldController {
     if (canvas.height !== height) canvas.height = height;
     return { width, height };
   }
-  function updateText() {
-    document
-      .querySelectorAll('[data-backend]:not(canvas)')
-      .forEach((el) => (el.textContent = backend));
-    const supportsDebug = backend === 'Rust / wgpu';
-    if (!supportsDebug) mode = 0;
-    const debugSelect = document.querySelector<HTMLSelectElement>('#view-select');
-    if (debugSelect) {
-      debugSelect.value = String(mode);
-      debugSelect.disabled = !supportsDebug;
-      debugSelect.title = supportsDebug ? '' : ui('debug');
-    }
-    const runtimeSelect = document.querySelector<HTMLSelectElement>('#backend-select');
-    if (runtimeSelect) {
-      runtimeSelect.value = preferredBackend;
-      runtimeSelect.disabled = false;
-    }
-    const shapeSelect = document.querySelector<HTMLSelectElement>('#shape-select');
-    if (shapeSelect) shapeSelect.disabled = false;
-    const ids: Record<string, string> = {
-      'lab-backend': backendDetail,
-      'lab-particles': engine?.particle_count().toLocaleString() ?? '—',
-      'lab-memory': engine ? `${(engine.state_bytes() / 1024).toFixed(0)} KiB` : '—',
-      'lab-frame': !engine
-        ? '—'
-        : reduced
-          ? ui('still')
-          : samples.length > 10
-            ? `${percentile(samples, 0.5).toFixed(1)} ms / ${percentile(samples, 0.95).toFixed(1)} ms`
-            : ui('collecting'),
-      'lab-viewport': canvas ? `${canvas.width} × ${canvas.height}` : '—',
-    };
-    for (const [id, value] of Object.entries(ids)) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value;
-    }
-    const measure = document.querySelector<HTMLButtonElement>('#measure');
-    if (measure && !recording) measure.disabled = !engine || reduced;
-    const save = document.querySelector<HTMLButtonElement>('#save-frame');
-    if (save) save.disabled = !engine;
-    if (canvas) {
-      canvas.dataset.backend = backend;
-      canvas.dataset.shape = String(shape);
-      canvas.dataset.frames = String(frameCount);
-      canvas.dataset.paused = String(reduced);
-      canvas.dataset.time = elapsed.toFixed(2);
-      canvas.dataset.scroll = scroll.toFixed(3);
-      canvas.dataset.pointer = pointerStrength.toFixed(2);
-    }
+  function requestFrame() {
+    if (!frameRequest && !document.hidden && renderer && !rendererFailed)
+      frameRequest = requestAnimationFrame(renderFrame);
   }
-  function percentile(values: number[], q: number) {
-    const sorted = [...values].sort((a, b) => a - b);
-    return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))] ?? 0;
-  }
-  function schedule() {
-    if (!raf && !document.hidden && engine && !failed) raf = requestAnimationFrame(tick);
-  }
-  function tick(now: number) {
-    raf = 0;
-    if (!engine || document.hidden || failed) return;
-    const dt = last ? Math.min((now - last) / 1000, 0.033) : 1 / 60;
-    if (last && !reduced) {
-      const interval = now - last;
+  function renderFrame(now: number) {
+    frameRequest = 0;
+    if (!renderer || document.hidden || rendererFailed) return;
+    const deltaSeconds = lastFrameTime ? Math.min((now - lastFrameTime) / 1000, 0.033) : 1 / 60;
+    if (lastFrameTime && !reducedMotion) {
+      const interval = now - lastFrameTime;
       if (interval > 0 && Number.isFinite(interval)) {
-        samples.push(interval);
-        if (samples.length > 180) samples.shift();
-        if (recording) recordSamples.push(interval);
+        frameIntervals.push(interval);
+        if (frameIntervals.length > 180) frameIntervals.shift();
+        if (measuring) measurementIntervals.push(interval);
       }
     }
-    last = now;
-    if (!reduced) {
-      elapsed += dt;
-      const ease = 1 - Math.exp(-dt * 18);
-      px += (tx - px) * ease;
-      py += (ty - py) * ease;
-      pointerStrength += (active - pointerStrength) * ease;
-      scroll += (scrollTarget - scroll) * (1 - Math.exp(-dt * 4));
+    lastFrameTime = now;
+    if (!reducedMotion) {
+      elapsedTime += deltaSeconds;
+      const ease = 1 - Math.exp(-deltaSeconds * 18);
+      pointerX += (pointerTargetX - pointerX) * ease;
+      pointerY += (pointerTargetY - pointerY) * ease;
+      pointerStrength += (pointerActive - pointerStrength) * ease;
+      scrollProgress += (targetScrollProgress - scrollProgress) * (1 - Math.exp(-deltaSeconds * 4));
     }
-    if (!reduced || dirty) {
+    if (!reducedMotion || needsRender) {
       try {
-        const { width, height } = size();
-        const shown = engine.frame(
-          elapsed,
-          reduced ? 0 : dt,
-          shape,
-          px,
-          py,
-          reduced ? 0 : pointerStrength,
+        const { width, height } = resizeCanvas();
+        const shown = renderer.frame(
+          elapsedTime,
+          reducedMotion ? 0 : deltaSeconds,
+          shapeId,
+          pointerX,
+          pointerY,
+          reducedMotion ? 0 : pointerStrength,
           width,
           height,
-          mode,
-          snap || reduced,
-          scroll,
+          viewMode,
+          resetParticles || reducedMotion,
+          scrollProgress,
           pointerHistory.frame(now),
         );
         if (shown) {
           frameCount++;
           canvas.dataset.frames = String(frameCount);
-          dirty = false;
-          snap = false;
+          needsRender = false;
+          resetParticles = false;
           document.getElementById('field-stage')?.setAttribute('data-ready', 'true');
           if (captureRequested) {
             captureRequested = false;
@@ -185,95 +140,106 @@ function createField(stage: HTMLElement): FieldController {
           }
         }
       } catch (error) {
-        fail(error);
+        showStaticFallback(error);
         return;
       }
     }
-    if (frameCount % 25 === 0 || dirty) updateText();
-    if (recording && now - sampleStarted >= 10000) finishRecording();
-    if (!reduced || dirty) schedule();
+    if (frameCount % 25 === 0 || needsRender) syncDiagnostics();
+    if (measuring && now - measurementStarted >= 10000) finishMeasurement();
+    if (!reducedMotion || needsRender) requestFrame();
   }
-  function fail(error: unknown) {
+  function releaseRenderer() {
+    try {
+      renderer?.destroy();
+      renderer?.free?.();
+    } catch {
+      // A lost context may reject cleanup; the static view must still be usable.
+    }
+    renderer = undefined;
+  }
+
+  function replaceCanvas() {
+    // A canvas cannot change context type after WebGPU or WebGL has claimed it.
+    const replacement = canvas.cloneNode(false) as HTMLCanvasElement;
+    canvas.replaceWith(replacement);
+    canvas = replacement;
+  }
+
+  function showStaticFallback(error: unknown) {
     console.error('[Field / Form]', error);
     invalidateMeasurement(ui('interrupted'));
-    failed = true;
+    rendererFailed = true;
     captureRequested = false;
-    loading = false;
-    backend = 'Static view';
+    startingRenderer = false;
+    backendLabel = 'Static view';
     backendDetail = ui('failed');
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-    try {
-      engine?.destroy();
-      engine?.free?.();
-    } catch {}
-    engine = undefined;
+    if (frameRequest) cancelAnimationFrame(frameRequest);
+    frameRequest = 0;
+    releaseRenderer();
     document.getElementById('graphics-retry')?.removeAttribute('hidden');
     document.getElementById('field-stage')?.setAttribute('data-fallback', 'true');
-    updateText();
+    syncDiagnostics();
   }
-  async function boot() {
-    if (engine || loading || disposed) return;
-    const ticket = ++epoch;
+  async function startRenderer() {
+    if (renderer || startingRenderer || disposed) return;
+    const startupId = ++initializationId;
 
-    if (preferredBackend === 'static') {
-      backend = 'Static view';
+    if (backendPreference === 'static') {
+      backendLabel = 'Static view';
       backendDetail = ui('static');
       document.getElementById('field-stage')?.setAttribute('data-fallback', 'true');
-      updateText();
+      syncDiagnostics();
       return;
     }
-    loading = true;
-    failed = false;
-    shape = Number(
-      document.querySelector<HTMLSelectElement>('#shape-select')?.value ?? routeShape(),
+    startingRenderer = true;
+    rendererFailed = false;
+    shapeId = Number(
+      document.querySelector<HTMLSelectElement>('#shape-select')?.value ?? readRouteShape(),
     );
-    size();
-    const count = innerWidth < 650 ? 12288 : 32768;
+    resizeCanvas();
+    const particleCount = innerWidth < 650 ? 12288 : 32768;
     try {
-      if (preferredBackend === 'webgl' || !navigator.gpu)
+      if (backendPreference === 'webgl' || !navigator.gpu)
         throw new Error('WebGL2 compatibility path selected or WebGPU unavailable');
       const wasm = await import('./wasm/field_form.js');
       await wasm.default();
-      if (disposed || ticket !== epoch) return;
-      const created = await wasm.FieldRenderer.create(canvas, count);
-      if (disposed || ticket !== epoch) {
+      if (disposed || startupId !== initializationId) return;
+      const created = await wasm.FieldRenderer.create(canvas, particleCount);
+      if (disposed || startupId !== initializationId) {
         created.destroy();
         created.free?.();
         return;
       }
-      engine = created;
-      backend = 'Rust / wgpu';
+      renderer = created;
+      backendLabel = 'Rust / wgpu';
       backendDetail = 'Rust → WASM → wgpu 29 → WebGPU';
     } catch (error) {
-      if (disposed || ticket !== epoch) return;
+      if (disposed || startupId !== initializationId) return;
       console.info('[Field / Form] WebGPU unavailable; trying WebGL2.', String(error));
-      const replacement = canvas.cloneNode(false) as HTMLCanvasElement;
-      canvas.replaceWith(replacement);
-      canvas = replacement;
-      size();
+      replaceCanvas();
+      resizeCanvas();
       try {
-        engine = createFallback(canvas, count, fail);
-        backend = 'WebGL2';
+        renderer = createWebGLRenderer(canvas, particleCount, showStaticFallback);
+        backendLabel = 'WebGL2';
         backendDetail = 'WebGL2 · vertex morph fallback';
       } catch (fallbackError) {
-        fail(fallbackError);
+        showStaticFallback(fallbackError);
         return;
       }
     }
-    loading = false;
+    startingRenderer = false;
     canvas.dataset.instance = crypto.randomUUID();
     document.getElementById('graphics-retry')?.setAttribute('hidden', '');
     document.getElementById('field-stage')?.removeAttribute('data-fallback');
-    dirty = true;
-    snap = true;
-    last = 0;
-    updateText();
-    schedule();
+    needsRender = true;
+    resetParticles = true;
+    lastFrameTime = 0;
+    syncDiagnostics();
+    requestFrame();
   }
   function updateScroll() {
     document.body.dataset.reading = String(window.scrollY > innerHeight * 0.65);
-    scrollTarget = Math.min(
+    targetScrollProgress = Math.min(
       1,
       Math.max(
         0,
@@ -281,13 +247,12 @@ function createField(stage: HTMLElement): FieldController {
       ),
     );
   }
-  let revealObserver: IntersectionObserver | undefined;
   function revealContent() {
     revealObserver?.disconnect();
     const elements = document.querySelectorAll<HTMLElement>(
       '.home-kicker,.home-intro>*,.work-index>*,.project-intro>.eyebrow,.project-intro>h1,.project-summary,.project-meta,.decision-row,.about-head>*,.lab-head>h1,.lab-description,.study-head>*,.story section,.story-lead,.study-entry,.collection-head>.eyebrow,.collection-head>h1,.collection-summary,.category-nav,.case-preview,.group-heading',
     );
-    if (reduced) {
+    if (reducedMotion) {
       elements.forEach((el) => el.classList.remove('will-reveal'));
       return;
     }
@@ -312,62 +277,119 @@ function createField(stage: HTMLElement): FieldController {
     captureRequested = false;
     updateScroll();
     revealContent();
-    shape = routeShape();
-    mode = 0;
-    active = 0;
+    shapeId = readRouteShape();
+    viewMode = 0;
+    pointerActive = 0;
     pointerHistory.reset();
-    samples = [];
-    recording = false;
+    frameIntervals = [];
+    measuring = false;
     hasMeasurement = false;
-    recordSamples = [];
-    dirty = true;
-    snap = reduced;
-    last = 0;
-    updateText();
-    if (engine) schedule();
-    else void boot();
+    measurementIntervals = [];
+    needsRender = true;
+    resetParticles = reducedMotion;
+    lastFrameTime = 0;
+    syncDiagnostics();
+    if (renderer) requestFrame();
+    else void startRenderer();
   }
-  function finishRecording() {
-    recording = false;
+  function syncDiagnostics() {
+    document
+      .querySelectorAll('[data-backend]:not(canvas)')
+      .forEach((el) => (el.textContent = backendLabel));
+    const supportsDebug = backendLabel === 'Rust / wgpu';
+    if (!supportsDebug) viewMode = 0;
+    const debugSelect = document.querySelector<HTMLSelectElement>('#view-select');
+    if (debugSelect) {
+      debugSelect.value = String(viewMode);
+      debugSelect.disabled = !supportsDebug;
+      debugSelect.title = supportsDebug ? '' : ui('debug');
+    }
+    const runtimeSelect = document.querySelector<HTMLSelectElement>('#backend-select');
+    if (runtimeSelect) {
+      runtimeSelect.value = backendPreference;
+      runtimeSelect.disabled = false;
+    }
+    const shapeSelect = document.querySelector<HTMLSelectElement>('#shape-select');
+    if (shapeSelect) shapeSelect.disabled = false;
+
+    let frameTiming = '—';
+    if (renderer) {
+      if (reducedMotion) frameTiming = ui('still');
+      else if (frameIntervals.length > 10) {
+        const median = percentile(frameIntervals, 0.5).toFixed(1);
+        const p95 = percentile(frameIntervals, 0.95).toFixed(1);
+        frameTiming = `${median} ms / ${p95} ms`;
+      } else frameTiming = ui('collecting');
+    }
+    const diagnostics: Record<string, string> = {
+      'lab-backend': backendDetail,
+      'lab-particles': renderer?.particle_count().toLocaleString() ?? '—',
+      'lab-memory': renderer ? `${(renderer.state_bytes() / 1024).toFixed(0)} KiB` : '—',
+      'lab-frame': frameTiming,
+      'lab-viewport': `${canvas.width} × ${canvas.height}`,
+    };
+    for (const [id, value] of Object.entries(diagnostics)) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+    const measure = document.querySelector<HTMLButtonElement>('#measure');
+    if (measure && !measuring) measure.disabled = !renderer || reducedMotion;
+    const save = document.querySelector<HTMLButtonElement>('#save-frame');
+    if (save) save.disabled = !renderer;
+    canvas.dataset.backend = backendLabel;
+    canvas.dataset.shape = String(shapeId);
+    canvas.dataset.frames = String(frameCount);
+    canvas.dataset.paused = String(reducedMotion);
+    canvas.dataset.time = elapsedTime.toFixed(2);
+    canvas.dataset.scroll = scrollProgress.toFixed(3);
+    canvas.dataset.pointer = pointerStrength.toFixed(2);
+  }
+  function percentile(values: number[], q: number) {
+    const sorted = [...values].sort((a, b) => a - b);
+    return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))] ?? 0;
+  }
+
+  function finishMeasurement() {
+    measuring = false;
     hasMeasurement = true;
     const el = document.getElementById('measurement-result');
     const button = document.getElementById('measure') as HTMLButtonElement | null;
     if (button) {
       button.textContent = ui('measure');
-      button.disabled = !engine || reduced;
+      button.disabled = !renderer || reducedMotion;
     }
     if (el)
       el.textContent = measurement(
-        recordSamples.length,
-        percentile(recordSamples, 0.5).toFixed(1),
-        percentile(recordSamples, 0.95).toFixed(1),
+        measurementIntervals.length,
+        percentile(measurementIntervals, 0.5).toFixed(1),
+        percentile(measurementIntervals, 0.95).toFixed(1),
       );
   }
   function invalidateMeasurement(reason: string) {
-    const wasRecording = recording;
+    const wasRecording = measuring;
     const hadResult = hasMeasurement;
-    recording = false;
+    measuring = false;
     hasMeasurement = false;
-    recordSamples = [];
+    measurementIntervals = [];
     const el = document.getElementById('measurement-result');
     if (el && (wasRecording || hadResult)) el.textContent = invalidated(reason, wasRecording);
     const button = document.getElementById('measure') as HTMLButtonElement | null;
     if (button) {
       button.textContent = ui('measure');
-      button.disabled = !engine || reduced;
+      button.disabled = !renderer || reducedMotion;
     }
   }
   // Read pixels in the same frame that drew them. WebGL may discard the drawing
   // buffer after compositing, especially when reduced motion stops the RAF loop.
   function saveFrame() {
-    const savedShape = shape;
+    const savedShape = shapeId;
     canvas.toBlob((blob) => {
       if (!blob || disposed) return;
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `sookie-field-form-${savedShape}.png`;
-      a.click();
+      const download = document.createElement('a');
+      download.href = url;
+      download.download = `sookie-field-form-${savedShape}.png`;
+      download.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }, 'image/png');
   }
@@ -377,25 +399,25 @@ function createField(stage: HTMLElement): FieldController {
     (event) => {
       const target = event.target as HTMLElement;
       if (target.closest('#graphics-retry')) {
-        void boot();
+        void startRenderer();
       }
       if (target.closest('#save-frame')) {
-        if (!engine || failed) return;
+        if (!renderer || rendererFailed) return;
         captureRequested = true;
-        dirty = true;
-        schedule();
+        needsRender = true;
+        requestFrame();
       }
       if (target.closest('#measure')) {
-        if (!engine || reduced) return;
-        recording = true;
+        if (!renderer || reducedMotion) return;
+        measuring = true;
         hasMeasurement = false;
-        recordSamples = [];
-        sampleStarted = performance.now();
-        const b = document.getElementById('measure')!;
-        b.textContent = ui('measuring');
-        b.setAttribute('disabled', '');
-        const el = document.getElementById('measurement-result');
-        if (el) el.textContent = ui('recording');
+        measurementIntervals = [];
+        measurementStarted = performance.now();
+        const button = document.getElementById('measure')!;
+        button.textContent = ui('measuring');
+        button.setAttribute('disabled', '');
+        const result = document.getElementById('measurement-result');
+        if (result) result.textContent = ui('recording');
       }
     },
     { signal },
@@ -405,41 +427,35 @@ function createField(stage: HTMLElement): FieldController {
     (event) => {
       const target = event.target as HTMLSelectElement;
       if (target.id === 'shape-select') {
-        shape = validForm(Number(target.value));
+        shapeId = validForm(Number(target.value));
         pointerHistory.reset();
-        document.body.dataset.shape = String(shape);
-        dirty = true;
-        snap = reduced;
-        samples = [];
+        document.body.dataset.shape = String(shapeId);
+        needsRender = true;
+        resetParticles = reducedMotion;
+        frameIntervals = [];
         invalidateMeasurement(ui('shape'));
-        schedule();
+        requestFrame();
       }
       if (target.id === 'view-select') {
-        mode = Number(target.value);
-        dirty = true;
-        samples = [];
+        viewMode = Number(target.value);
+        needsRender = true;
+        frameIntervals = [];
         invalidateMeasurement(ui('mode'));
-        schedule();
+        requestFrame();
       }
       if (target.id === 'backend-select') {
         captureRequested = false;
-        preferredBackend = target.value;
-        epoch++;
-        loading = false;
-        samples = [];
+        backendPreference = target.value;
+        initializationId++;
+        startingRenderer = false;
+        frameIntervals = [];
         invalidateMeasurement(ui('backend'));
-        cancelAnimationFrame(raf);
-        raf = 0;
-        try {
-          engine?.destroy();
-          engine?.free?.();
-        } catch {}
-        engine = undefined;
-        const replacement = canvas.cloneNode(false) as HTMLCanvasElement;
-        canvas.replaceWith(replacement);
-        canvas = replacement;
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
+        releaseRenderer();
+        replaceCanvas();
         document.getElementById('field-stage')?.removeAttribute('data-ready');
-        void boot();
+        void startRenderer();
       }
     },
     { signal },
@@ -447,20 +463,25 @@ function createField(stage: HTMLElement): FieldController {
   window.addEventListener(
     'pointermove',
     (event) => {
-      tx = (event.clientX / innerWidth) * 2 - 1;
-      ty = 1 - (event.clientY / innerHeight) * 2;
+      pointerTargetX = (event.clientX / innerWidth) * 2 - 1;
+      pointerTargetY = 1 - (event.clientY / innerHeight) * 2;
       const el = event.target as HTMLElement;
-      active =
+      pointerActive =
         event.pointerType === 'mouse' &&
         !el.closest(
           'a,button,select,input,textarea,video,.story,.work-collection,.study-list,.project-summary,.project-meta,.decisions',
         )
           ? 1
           : 0;
-      if (active && !reduced) {
-        pointerHistory.move(tx, ty, performance.now(), innerWidth / innerHeight);
-        dirty = true;
-        schedule();
+      if (pointerActive && !reducedMotion) {
+        pointerHistory.move(
+          pointerTargetX,
+          pointerTargetY,
+          performance.now(),
+          innerWidth / innerHeight,
+        );
+        needsRender = true;
+        requestFrame();
       } else pointerHistory.reset();
     },
     { passive: true, signal },
@@ -469,7 +490,7 @@ function createField(stage: HTMLElement): FieldController {
     'pointerout',
     (event) => {
       if (!event.relatedTarget) {
-        active = 0;
+        pointerActive = 0;
         pointerHistory.reset();
       }
     },
@@ -482,11 +503,11 @@ function createField(stage: HTMLElement): FieldController {
     () => {
       pointerHistory.reset();
       updateScroll();
-      dirty = true;
-      last = 0;
-      samples = [];
+      needsRender = true;
+      lastFrameTime = 0;
+      frameIntervals = [];
       invalidateMeasurement(ui('resize'));
-      schedule();
+      requestFrame();
     },
     { passive: true, signal },
   );
@@ -494,49 +515,49 @@ function createField(stage: HTMLElement): FieldController {
     'visibilitychange',
     () => {
       pointerHistory.reset();
-      last = 0;
-      samples = [];
+      lastFrameTime = 0;
+      frameIntervals = [];
       invalidateMeasurement(ui('visibility'));
       if (document.hidden) {
-        cancelAnimationFrame(raf);
-        raf = 0;
+        cancelAnimationFrame(frameRequest);
+        frameRequest = 0;
       } else {
-        dirty = true;
-        schedule();
+        needsRender = true;
+        requestFrame();
       }
     },
     { signal },
   );
-  reducedQuery.addEventListener(
+  motionPreference.addEventListener(
     'change',
     (event) => {
-      reduced = event.matches;
+      reducedMotion = event.matches;
       pointerHistory.reset();
       invalidateMeasurement(ui('motion'));
-      samples = [];
+      frameIntervals = [];
       revealContent();
-      dirty = true;
-      snap = reduced;
-      last = 0;
-      updateText();
-      schedule();
+      needsRender = true;
+      resetParticles = reducedMotion;
+      lastFrameTime = 0;
+      syncDiagnostics();
+      requestFrame();
     },
     { signal },
   );
   window.addEventListener(
     'pagehide',
     () => {
-      cancelAnimationFrame(raf);
-      raf = 0;
+      cancelAnimationFrame(frameRequest);
+      frameRequest = 0;
     },
     { signal },
   );
   window.addEventListener(
     'pageshow',
     () => {
-      last = 0;
-      dirty = true;
-      schedule();
+      lastFrameTime = 0;
+      needsRender = true;
+      requestFrame();
     },
     { signal },
   );
@@ -545,22 +566,19 @@ function createField(stage: HTMLElement): FieldController {
     attach(next) {
       stage = next;
       stage.prepend(canvas);
-      if (engine) stage.setAttribute('data-ready', 'true');
-      if (failed || preferredBackend === 'static') stage.setAttribute('data-fallback', 'true');
+      if (renderer) stage.setAttribute('data-ready', 'true');
+      if (rendererFailed || backendPreference === 'static')
+        stage.setAttribute('data-fallback', 'true');
     },
     destroy() {
       if (disposed) return;
       disposed = true;
-      epoch++;
+      initializationId++;
       events.abort();
       revealObserver?.disconnect();
-      cancelAnimationFrame(raf);
-      raf = 0;
-      try {
-        engine?.destroy();
-        engine?.free?.();
-      } catch {}
-      engine = undefined;
+      cancelAnimationFrame(frameRequest);
+      frameRequest = 0;
+      releaseRenderer();
       canvas.remove();
     },
   };
@@ -568,27 +586,27 @@ function createField(stage: HTMLElement): FieldController {
 
 // A route or locale layout may remount, but the WebGPU canvas must not.
 // A short release lease bridges React's cleanup/setup commit (including Strict Mode).
-let retained: FieldController | undefined;
-let releaseTimer: ReturnType<typeof setTimeout> | undefined;
-let activeLease: symbol | undefined;
+let retainedController: FieldController | undefined;
+let pendingRelease: ReturnType<typeof setTimeout> | undefined;
+let activeHost: symbol | undefined;
 export function acquireField(stage: HTMLElement) {
-  if (releaseTimer) {
-    clearTimeout(releaseTimer);
-    releaseTimer = undefined;
+  if (pendingRelease) {
+    clearTimeout(pendingRelease);
+    pendingRelease = undefined;
   }
-  if (retained) retained.attach(stage);
-  else retained = createField(stage);
+  if (retainedController) retainedController.attach(stage);
+  else retainedController = createField(stage);
   const lease = Symbol('field-host');
-  activeLease = lease;
+  activeHost = lease;
   return {
-    controller: retained,
+    controller: retainedController,
     release() {
-      if (activeLease !== lease) return;
-      releaseTimer = setTimeout(() => {
-        if (activeLease === lease) {
-          retained?.destroy();
-          retained = undefined;
-          activeLease = undefined;
+      if (activeHost !== lease) return;
+      pendingRelease = setTimeout(() => {
+        if (activeHost === lease) {
+          retainedController?.destroy();
+          retainedController = undefined;
+          activeHost = undefined;
         }
       }, 0);
     },

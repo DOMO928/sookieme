@@ -71,7 +71,7 @@ export default function SiteHeader({ locale, kind }: { locale: Locale; kind: str
           CV
         </span>
         <small className={styles.pdf}>KO</small>
-        <Icon name="arrow-up-right" locale={locale} />
+        <Icon name="arrow-up-right" />
       </a>
       <LanguageSwitch locale={locale} label={labels.language} />
     </header>

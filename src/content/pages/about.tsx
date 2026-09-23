@@ -34,7 +34,7 @@ export default function About({ locale }: { locale: Locale }) {
       <div className={styles.links}>
         <LocalLink href="/#work" locale={locale}>
           {t('editorial.viewWork')}
-          <Icon locale={locale} name="arrow-up-right" />
+          <Icon name="arrow-up-right" />
         </LocalLink>
         <LocalLink
           href="/documents/Jaesook-Jeong-Resume.pdf"
@@ -43,14 +43,14 @@ export default function About({ locale }: { locale: Locale }) {
           rel="noopener"
         >
           {t('about.resume')}
-          <Icon locale={locale} name="arrow-up-right" />
+          <Icon name="arrow-up-right" />
         </LocalLink>
       </div>
       <div className={styles.contact}>
         <span>{t('about.contact')}</span>
         <a href="mailto:jeong.jaesook92@gmail.com">
           jeong.jaesook92@gmail.com
-          <Icon locale={locale} name="arrow-up-right" />
+          <Icon name="arrow-up-right" />
         </a>
       </div>
     </section>

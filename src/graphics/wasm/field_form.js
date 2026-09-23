@@ -34,11 +34,11 @@ export class FieldRenderer {
     }
     /**
      * @param {number} time
-     * @param {number} dt
+     * @param {number} delta_seconds
      * @param {number} shape
-     * @param {number} px
-     * @param {number} py
-     * @param {number} active
+     * @param {number} pointer_x
+     * @param {number} pointer_y
+     * @param {number} pointer_strength
      * @param {number} width
      * @param {number} height
      * @param {number} mode
@@ -47,12 +47,12 @@ export class FieldRenderer {
      * @param {Float32Array} trail
      * @returns {boolean}
      */
-    frame(time, dt, shape, px, py, active, width, height, mode, still, scroll, trail) {
+    frame(time, delta_seconds, shape, pointer_x, pointer_y, pointer_strength, width, height, mode, still, scroll, trail) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
             const ptr0 = passArrayF32ToWasm0(trail, wasm.__wbindgen_export);
             const len0 = WASM_VECTOR_LEN;
-            wasm.fieldrenderer_frame(retptr, this.__wbg_ptr, time, dt, shape, px, py, active, width, height, mode, still, scroll, ptr0, len0);
+            wasm.fieldrenderer_frame(retptr, this.__wbg_ptr, time, delta_seconds, shape, pointer_x, pointer_y, pointer_strength, width, height, mode, still, scroll, ptr0, len0);
             var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
             var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
             var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);

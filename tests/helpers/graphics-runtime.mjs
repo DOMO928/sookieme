@@ -183,7 +183,7 @@ export function graphicsRuntime({ reduced = false, wasm } = {}) {
       console: { info() {}, error() {} },
     },
     {
-      './webgl': { createFallback: engine },
+      './webgl': { createWebGLRenderer: engine },
       './wasm/field_form.js': wasm ?? {},
     },
   );

@@ -9,7 +9,7 @@ export function getMeta(locale: Locale) {
   const t = getTranslations(locale);
   return {
     title: '3D Content Platform — Sookie',
-    description: t('contentPlatform.webClientDevelopmentAtBluebeakerContentSearch'),
+    description: t('contentPlatform.description'),
     shape: formId.content,
     kind: 'project',
   };
@@ -24,8 +24,8 @@ export default function WorkContentPlatform({ locale }: { locale: Locale }) {
         category="3D APPS / BLUEBEAKER / 2022.03–2025.01"
         line1="3D Content"
         line2="Platform"
-        summary={t('contentPlatform.iBuiltWebServicesForFindingEditing')}
-        role={t('contentPlatform.fullClientDevelopmentDevelopmentLead')}
+        summary={t('contentPlatform.summary')}
+        role={t('contentPlatform.role')}
         stack="React · Next.js · Three.js · WebGL"
         backHref="/work/interactive-3d/#bluebeaker"
         backLabel="Interactive"
@@ -40,55 +40,55 @@ export default function WorkContentPlatform({ locale }: { locale: Locale }) {
           <ProjectVideo
             locale={locale}
             project="Bluebeaker"
-            label={t('contentPlatform.text3dViewerScreenRecording')}
+            label={t('contentPlatform.videoLabel')}
             src="/media/bluebeaker-viewer.mp4"
             poster="/media/bluebeaker-viewer.webp"
             width={1600}
             height={958}
-            description={t('contentPlatform.bluebeakerRecordingRotatingAndZoomingAFace')}
+            description={t('contentPlatform.videoDescription')}
           />
           <h2>Product UI</h2>
-          <p>{t('contentPlatform.iDevelopedTheClientsForBluebeakerLab')}</p>
+          <p>{t('contentPlatform.overview')}</p>
           <div className="case-topics">
             <div>
               <h3>{t('contentPlatform.searchInputsAndResults')}</h3>
-              <p>{t('contentPlatform.inLibraryIConnectedSearchTermsContent')}</p>
+              <p>{t('contentPlatform.searchBehavior')}</p>
             </div>
             <div>
-              <h3>{t('contentPlatform.storageAndContentSpecificViewers')}</h3>
-              <p>{t('contentPlatform.iConnectedFolderCreationRenamingAndFile')}</p>
+              <h3>{t('contentPlatform.storageHeading')}</h3>
+              <p>{t('contentPlatform.storageBehavior')}</p>
             </div>
             <div>
               <h3>{t('contentPlatform.connectingWebAndDesktop')}</h3>
-              <p>{t('contentPlatform.doctorRanAsAWebInterfaceInside')}</p>
+              <p>{t('contentPlatform.webViewIntegration')}</p>
             </div>
           </div>
         </section>
         <section id="tools">
           <h2>Content Tools</h2>
-          <p>{t('contentPlatform.iBuiltAdminScreensWhereOperatorsAnd')}</p>
+          <p>{t('contentPlatform.adminOverview')}</p>
           <div className="case-topics">
             <div>
               <h3>{t('contentPlatform.registrationAndUploads')}</h3>
-              <p>{t('contentPlatform.theClientFirstCreatedContentMetadataRequested')}</p>
+              <p>{t('contentPlatform.uploadFlow')}</p>
             </div>
             <div>
-              <h3>{t('contentPlatform.text3dSettingsAsControls')}</h3>
-              <p>{t('contentPlatform.iConnectedPanelsForCameraCalibrationLighting')}</p>
+              <h3>{t('contentPlatform.controlsHeading')}</h3>
+              <p>{t('contentPlatform.renderControls')}</p>
             </div>
           </div>
         </section>
         <section id="rendering">
           <h2>Rendering & Assets</h2>
-          <p>{t('contentPlatform.iWorkedOnBothViewerInteractionAnd')}</p>
+          <p>{t('contentPlatform.optimizationOverview')}</p>
           <div className="case-topics">
             <div>
               <h3>{t('contentPlatform.pickingAndMultipleViews')}</h3>
-              <p>{t('contentPlatform.iUsedThreeMeshBvhForModel')}</p>
+              <p>{t('contentPlatform.viewerArchitecture')}</p>
             </div>
             <div>
-              <h3>{t('contentPlatform.automatingRepetitiveAssetWork')}</h3>
-              <p>{t('contentPlatform.withGltfTransformIRemovedDuplicateAnd')}</p>
+              <h3>{t('contentPlatform.automationHeading')}</h3>
+              <p>{t('contentPlatform.assetOptimization')}</p>
             </div>
           </div>
         </section>
@@ -100,7 +100,7 @@ export default function WorkContentPlatform({ locale }: { locale: Locale }) {
         >
           <small>{t('contentPlatform.next3dApps')}</small>
           <span>
-            Realtime 3D Game <Icon locale={locale} name="arrow-right" />
+            Realtime 3D Game <Icon name="arrow-right" />
           </span>
         </LocalLink>
       </article>

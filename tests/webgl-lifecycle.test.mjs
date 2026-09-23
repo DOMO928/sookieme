@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createFallback } from '../src/graphics/webgl.ts';
-import { Target } from './helpers/graphics-runtime.mjs';
+import { Target, loadModule } from './helpers/graphics-runtime.mjs';
+const { createWebGLRenderer } = loadModule('src/graphics/webgl.ts');
 function context({ fragmentFails = false, linkFails = false } = {}) {
   const deleted = [],
     lost = [];
@@ -32,14 +32,14 @@ function context({ fragmentFails = false, linkFails = false } = {}) {
 
 test('WebGL releases shaders and context after fragment compilation fails', () => {
   const h = context({ fragmentFails: true });
-  assert.throws(() => createFallback(h.canvas, 100), /compile failed/);
+  assert.throws(() => createWebGLRenderer(h.canvas, 100), /compile failed/);
   assert.deepEqual(h.deleted.sort(), [1, 2]);
   assert.equal(h.lost.length, 1);
 });
 
 test('WebGL cleans failed link resources and releases its context', () => {
   const h = context({ linkFails: true });
-  assert.throws(() => createFallback(h.canvas, 100), /link failed/);
+  assert.throws(() => createWebGLRenderer(h.canvas, 100), /link failed/);
   assert.deepEqual(h.deleted.map(String).sort(), ['1', '2', 'program']);
   assert.equal(h.lost.length, 1);
 });
@@ -47,7 +47,7 @@ test('WebGL cleans failed link resources and releases its context', () => {
 test('context loss is reported even without another animation frame; disposal is idempotent', () => {
   const h = context();
   const errors = [];
-  const renderer = createFallback(h.canvas, 100, (error) => errors.push(error));
+  const renderer = createWebGLRenderer(h.canvas, 100, (error) => errors.push(error));
   h.canvas.emit('webglcontextlost', { preventDefault() {} });
   assert.equal(errors.length, 1);
   renderer.destroy();

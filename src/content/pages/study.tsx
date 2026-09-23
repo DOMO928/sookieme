@@ -18,9 +18,9 @@ export default function Study({ locale }: { locale: Locale }) {
   return (
     <>
       <header className="study-head">
-        <p className="eyebrow">{t('study.text03OngoingExplorations')}</p>
+        <p className="eyebrow">{t('study.category')}</p>
         <h1>Study</h1>
-        <p>{t('study.graphicsAnimationExperiments')}</p>
+        <p>{t('study.description')}</p>
       </header>
       <div className="study-list">
         {studies.map((study) => (
@@ -54,11 +54,11 @@ export default function Study({ locale }: { locale: Locale }) {
                       loading="lazy"
                     />
                     <span>
-                      Field / Form <Icon locale={locale} name="arrow-up-right" />
+                      Field / Form <Icon name="arrow-up-right" />
                     </span>
                   </LocalLink>
                   <LocalLink className="source-link" href={study.href} locale={locale}>
-                    {study.action} <Icon locale={locale} name="arrow-up-right" />
+                    {study.action} <Icon name="arrow-up-right" />
                   </LocalLink>
                 </>
               ) : (
@@ -66,26 +66,22 @@ export default function Study({ locale }: { locale: Locale }) {
                   <details className="research-notes">
                     <summary>
                       {t('study.approachAndValidationPlan')}
-                      <Icon locale={locale} name="arrow-right" />
+                      <Icon name="arrow-right" />
                     </summary>
                     <div>
-                      <Diagram
-                        locale={locale}
-                        type="codec"
-                        caption={t('study.conceptDiagramOfReducingAMotionSequence')}
-                      />
+                      <Diagram locale={locale} type="codec" caption={t('study.codecDiagram')} />
                       <ol className="research-steps">
                         <li>
                           <b>FK → world pose → IK targets</b>
-                          <p>{t('study.extractHandAndFootPositionsAndPole')}</p>
+                          <p>{t('study.ikReconstruction')}</p>
                         </li>
                         <li>
                           <b>Sparse keys + interpolation</b>
-                          <p>{t('study.selectKeysFromTargetTrajectoriesAndUse')}</p>
+                          <p>{t('study.keyframeSelection')}</p>
                         </li>
                         <li>
                           <b>ML interpolation</b>
-                          <p>{t('study.aLaterStageWouldTestWhetherLearned')}</p>
+                          <p>{t('study.learnedInterpolation')}</p>
                         </li>
                       </ol>
                     </div>
@@ -99,7 +95,7 @@ export default function Study({ locale }: { locale: Locale }) {
           <small>{t('study.backToWork')}</small>
           <span>
             {t('index.selectedWork')}
-            <Icon locale={locale} name="arrow-right" />
+            <Icon name="arrow-right" />
           </span>
         </LocalLink>
       </div>

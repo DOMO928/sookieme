@@ -1,10 +1,8 @@
-import type { ReactNode } from 'react';
 import CompactDiagram from './CompactDiagram';
 import { getTranslations } from '@/i18n/catalog';
 import type { Locale } from '@/i18n/routes';
 interface Props {
   locale: Locale;
-  children?: ReactNode;
   type: 'stroke' | 'graph' | 'assets' | 'animation' | 'instances' | 'codec';
   caption: string;
 }
@@ -20,7 +18,7 @@ export default function TechnicalDiagram(props: Props) {
         className="diagram-scroll"
         tabIndex={0}
         role="region"
-        aria-label={t('technicalDiagram.technicalDiagramScrollHorizontallyOnSmallScreens')}
+        aria-label={t('technicalDiagram.scrollLabel')}
       >
         <svg
           viewBox="0 0 720 320"

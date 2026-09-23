@@ -24,9 +24,13 @@ The localized error routes and global static 404 carry `noindex`. Because the ro
 
 The GPU controller owns its canvas. `GraphicsStage` provides a React host and acquires a retained runtime. A deferred release bridges layout cleanup/setup, including React Strict Mode. Normal navigation transfers the same canvas and renderer. The final release aborts listeners, disconnects observers, cancels animation and frees GPU resources.
 
-Initialization uses an epoch. Switching rendering backends or unmounting while WebGPU starts makes the earlier result stale; a stale renderer is destroyed rather than attached to the new host.
+Initialization uses an `initializationId`. Switching rendering backends or unmounting while WebGPU starts makes the earlier result stale; a stale renderer is destroyed rather than attached to the new host.
 
 Route and locale updates synchronize the document language, form selection, reading state and Lab labels. Particle positions and velocities remain in GPU memory. WebGL2 uses an analytic compatibility renderer; static mode and GPU failure display the route-specific WebP.
+
+`graphics/controller.ts` keeps frame scheduling, input and renderer ownership in one place. `graphics/webgl.ts` owns WebGL resources; its vertex and fragment programs live together in `graphics/webgl-shaders.ts`. Rust resource setup is in `graphics-rust/src/lib.rs`, with simulation and rendering in `field.wgsl`.
+
+Both shaders identify each form beside its surface branch. Changes to a surface should be applied to both rendering paths. Rust and WGSL share the named `FrameUniforms` layout; size and boundary offsets are checked at compile time. Keep the positional WASM `frame` arguments in the same order on the browser side.
 
 ## Other interactions
 
@@ -37,6 +41,8 @@ Next.js links handle local navigation and preserve native link behavior. Languag
 Use Node 24 and npm with the lockfile. Run `npm ci`, `npm run format:check`, `npm run check`, `npm run build`, then `npm test`. CI also runs `npm run check:rust` and `cargo fmt --manifest-path graphics-rust/Cargo.toml --check`. `npm run preview` serves the production export locally. After Korean copy changes, rebuild the font subset using `scripts/subset-font.py`. Rust changes also require `npm run build:wasm` and browser checks of both GPU backends.
 
 The repository contains only the portfolio and published assets. Preserved company code, private source documents, local QA captures, deployment credentials and the parent history workspace remain outside it. Public Field / Form downloads are generated during the build.
+
+When adding copy, name translation keys after their role (`xr.poseConversion`, for example), rather than deriving them from the wording. Keep page sections explicit in JSX. Small shared components are useful when they own a behavior or presentation rule; a short function alone is not a reason to create another module. The [maintainability review](maintainability-review-2026-09-23.md) records the reasoning and verification for this cleanup.
 
 ### Rebuilding the renderer
 

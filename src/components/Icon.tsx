@@ -1,8 +1,4 @@
-import type { ReactNode } from 'react';
-import type { Locale } from '@/i18n/routes';
 interface Props {
-  locale: Locale;
-  children?: ReactNode;
   name: string;
   className?: string;
 }

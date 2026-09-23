@@ -1,10 +1,8 @@
-import type { ReactNode } from 'react';
 import { getTranslations } from '@/i18n/catalog';
 import type { Locale } from '@/i18n/routes';
 import LocalLink from '@/components/LocalLink';
 interface Props {
   locale: Locale;
-  children?: ReactNode;
   first: string;
   firstAlt: string;
   firstLabel: string;

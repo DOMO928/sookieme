@@ -10,7 +10,7 @@ export function getMeta(locale: Locale) {
   const t = getTranslations(locale);
   return {
     title: 'Realtime 3D Game — Sookie',
-    description: t('realtimeGame.amosGameClientBuiltWithReactAnd'),
+    description: t('realtimeGame.description'),
     shape: formId.game,
     kind: 'project',
   };
@@ -25,8 +25,8 @@ export default function WorkRealtimeGame({ locale }: { locale: Locale }) {
         category="3D APPS / AMOS / 2020.08–2021.11"
         line1="Realtime"
         line2="3D Game"
-        summary={t('realtimeGame.iBuiltTheWebClientForA')}
-        role={t('realtimeGame.fullGameClientDevelopmentDevelopmentLead')}
+        summary={t('realtimeGame.summary')}
+        role={t('realtimeGame.role')}
         stack="React · Three.js · XState · Socket.IO"
         backHref="/work/interactive-3d/#amos"
         backLabel="Interactive"
@@ -46,18 +46,18 @@ export default function WorkRealtimeGame({ locale }: { locale: Locale }) {
             poster="/media/amos-gameplay.webp"
             width={1600}
             height={894}
-            description={t('realtimeGame.amosRecordingBaccaratWebUiDealerCard')}
+            description={t('realtimeGame.videoDescription')}
           />
           <h2>Game Client</h2>
-          <p>{t('realtimeGame.iDevelopedTheClientForAReact')}</p>
+          <p>{t('realtimeGame.overview')}</p>
           <div className="case-topics">
             <div>
               <h3>{t('realtimeGame.fromServerEventsToState')}</h3>
-              <p>{t('realtimeGame.theClientJoinedRoomsAndReceivedGame')}</p>
+              <p>{t('realtimeGame.serverEvents')}</p>
             </div>
             <div>
               <h3>{t('realtimeGame.whenInputIsAllowed')}</h3>
-              <p>{t('realtimeGame.iManagedAuthenticationSeparatelyFromTheWaiting')}</p>
+              <p>{t('realtimeGame.gamePhases')}</p>
             </div>
           </div>
         </section>
@@ -66,17 +66,17 @@ export default function WorkRealtimeGame({ locale }: { locale: Locale }) {
           <div className="case-topics">
             <div>
               <h3>{t('realtimeGame.switchingBetweenClipsAndIk')}</h3>
-              <p>{t('realtimeGame.clipsHandledEntryAndReturnMovementsDuring')}</p>
+              <p>{t('realtimeGame.animationCoordination')}</p>
             </div>
             <div>
               <h3>{t('realtimeGame.renderingRepeatedCards')}</h3>
-              <p>{t('realtimeGame.cardsSharedGeometryAndMaterialThroughInstancedmesh')}</p>
+              <p>{t('realtimeGame.cardRendering')}</p>
             </div>
           </div>
           <TechnicalDiagram
             locale={locale}
             type="instances"
-            caption={t('realtimeGame.conceptDiagramOfCardRenderingWithShared')}
+            caption={t('realtimeGame.cardDiagram')}
           />
         </section>
         <LocalLink
@@ -87,7 +87,7 @@ export default function WorkRealtimeGame({ locale }: { locale: Locale }) {
         >
           <small>{t('realtimeGame.nextWebPlatforms')}</small>
           <span>
-            Membership Platform <Icon locale={locale} name="arrow-right" />
+            Membership Platform <Icon name="arrow-right" />
           </span>
         </LocalLink>
       </article>

@@ -21,8 +21,8 @@ export default function WorkRustRenderer({ locale }: { locale: Locale }) {
         number="01"
         category="RENDERING SYSTEMS"
         line1="Renderer"
-        summary={t('rustRenderer.iDesignedAndImplementedA2dVector')}
-        role={t('rustRenderer.newRendererArchitectureAndImplementation')}
+        summary={t('rustRenderer.summary')}
+        role={t('rustRenderer.role')}
         stack="Rust · wgpu · WGSL · WASM"
         sections={[
           { id: 'shared', label: 'Geometry' },
@@ -34,29 +34,21 @@ export default function WorkRustRenderer({ locale }: { locale: Locale }) {
         <div className="story-lead">
           <p className="eyebrow">PROTOPIE / STUDIO XID</p>
           <h2>Cross-platform Rendering</h2>
-          <p>{t('rustRenderer.theProjectMovedRenderingFromProtopieS')}</p>
+          <p>{t('rustRenderer.overview')}</p>
         </div>
         <section id="shared">
           <p className="eyebrow">{t('rustRenderer.decision01Consistency')}</p>
           <h2>Geometry Consistency</h2>
-          <p>{t('rustRenderer.interpretingStrokeWidthOrAlignmentIndependentlyAt')}</p>
-          <Diagram
-            locale={locale}
-            type="stroke"
-            caption={t('rustRenderer.conceptDiagramOfSharingStrokeInterpretationAcross')}
-          />
-          <p>{t('rustRenderer.iAlsoDistinguishedChangesThatRequireRebuilding')}</p>
+          <p>{t('rustRenderer.strokeInterpretation')}</p>
+          <Diagram locale={locale} type="stroke" caption={t('rustRenderer.strokeDiagram')} />
+          <p>{t('rustRenderer.geometryUpdates')}</p>
         </section>
         <section id="graph">
           <p className="eyebrow">{t('rustRenderer.decision02RenderGraph')}</p>
           <h2>Render Graph</h2>
-          <p>{t('rustRenderer.operationsSuchAsBlurAndCompositingConsume')}</p>
-          <Diagram
-            locale={locale}
-            type="graph"
-            caption={t('rustRenderer.conceptDiagramOfPassDependenciesAndTemporary')}
-          />
-          <p>{t('rustRenderer.planningAndGpuCommandEncodingWereSeparate')}</p>
+          <p>{t('rustRenderer.passDependencies')}</p>
+          <Diagram locale={locale} type="graph" caption={t('rustRenderer.graphDiagram')} />
+          <p>{t('rustRenderer.graphPlanning')}</p>
         </section>
         <section id="recovery">
           <p className="eyebrow">{t('rustRenderer.decision03Recovery')}</p>
@@ -64,18 +56,18 @@ export default function WorkRustRenderer({ locale }: { locale: Locale }) {
           <div className="decision-pairs">
             <div>
               <h3>{t('rustRenderer.whenRetryingMakesSense')}</h3>
-              <p>{t('rustRenderer.transientFailuresRetryOnALaterFrame')}</p>
+              <p>{t('rustRenderer.transientRecovery')}</p>
             </div>
             <div>
               <h3>{t('rustRenderer.whenInputNeedsToChange')}</h3>
-              <p>{t('rustRenderer.workThatConsistentlyFailsOnTheSame')}</p>
+              <p>{t('rustRenderer.invalidInputRecovery')}</p>
             </div>
           </div>
         </section>
         <LocalLink className="next-project" href="/work/interactive-3d/" locale={locale}>
           <small>{t('rustRenderer.nextProject')}</small>
           <span>
-            Interactive 3D <Icon locale={locale} name="arrow-right" />
+            Interactive 3D <Icon name="arrow-right" />
           </span>
         </LocalLink>
       </article>

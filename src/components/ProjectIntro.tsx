@@ -34,7 +34,7 @@ export default function ProjectIntro({
     <>
       <section className="project-intro compact-intro">
         <LocalLink className="back-link" href={backHref} locale={locale}>
-          <Icon locale={locale} name="arrow-left" /> {parentLabel}
+          <Icon name="arrow-left" /> {parentLabel}
         </LocalLink>
         <p className="eyebrow">
           {number} / {category}
@@ -75,7 +75,7 @@ export default function ProjectIntro({
           aria-label={parentLabel}
           title={parentLabel}
         >
-          <Icon locale={locale} name="arrow-left" />
+          <Icon name="arrow-left" />
           <span>{parentLabel}</span>
         </LocalLink>
       </nav>
