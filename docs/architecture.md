@@ -38,6 +38,22 @@ Use Node 24 and npm with the lockfile. Run `npm ci`, `npm run format:check`, `np
 
 The repository contains only the portfolio and published assets. Preserved company code, private source documents, local QA captures, deployment credentials and the parent history workspace remain outside it. Public Field / Form downloads are generated during the build.
 
+### Rebuilding the renderer
+
+The compiled WASM and its JavaScript bindings are committed in `src/graphics/wasm/`. Running the site does not require Rust. To change the renderer, install a stable Rust toolchain through rustup, then run:
+
+```sh
+rustup target add wasm32-unknown-unknown
+cargo install wasm-bindgen-cli --version 0.2.123 --locked
+npm run build:wasm
+```
+
+The CLI version must match `wasm-bindgen` in `graphics-rust/Cargo.toml`. Commit the regenerated WASM files with the Rust changes, rebuild the site, and check the WebGPU and WebGL2 paths in the browser.
+
+### Deployment
+
+Production deployments currently use `vercel deploy --prod` from the project directory. GitHub pushes run CI but do not trigger a Vercel deployment.
+
 ## References
 
 - [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports)
