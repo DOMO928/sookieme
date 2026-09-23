@@ -29,7 +29,6 @@ export default function About({ locale }: { locale: Locale }) {
         <p>{t('about.backgroundIntro')}</p>
         <p>{t('about.startupsExperience')}</p>
         <p>{t('about.curiosity')}</p>
-        <p>{t('about.interaction')}</p>
         <p>{t('about.cultures')}</p>
       </div>
       <div className={styles.links}>

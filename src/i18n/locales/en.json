@@ -6,7 +6,7 @@
   },
   "about": {
     "title": "About me — Sookie / Jaesook Jeong",
-    "description": "Jaesook Jeong, frontend and graphics engineer. A maker’s perspective on installation art, startup work and interaction.",
+    "description": "Jaesook Jeong, frontend and graphics engineer. A maker’s perspective on installation art, startup work and new technologies.",
     "eyebrow": "About me",
     "intro": "I'm Jaesook Jeong, also known as Sookie. I work on frontend development and graphics.",
     "backgroundIntro": "I studied digital art and fine art and made installation work. As a developer, I still enjoy turning an idea into something tangible that other people can experience.",
@@ -14,7 +14,6 @@
     "contact": "Contact",
     "startupsExperience": "I have spent much of my career working intensively in fast-moving startups. Short development cycles exposed me to a wide range of products and technologies, and I have enjoyed taking on unfamiliar problems.",
     "curiosity": "When I encounter a new technology, I wonder what I could make with it. If there is something I want to build, I am happy to learn what it takes, whatever the discipline. I enjoy trying unfamiliar tools in actual work and discovering what they can do.",
-    "interaction": "I am especially interested in how people interact with what I make: how a visitor experiences an installation, or how an interface responds to someone using it. This interest has stayed with me from installation art through to software development.",
     "cultures": "Living in Germany for many years introduced me to different cultures and perspectives. I enjoy exchanging ideas and making things with people from different backgrounds, and I want to keep working in that kind of environment."
   },
   "index": {
