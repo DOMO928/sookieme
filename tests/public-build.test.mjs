@@ -130,8 +130,6 @@ test('web case captures are lightweight and isolated from company source', async
         /127[.]0[.]0[.]1:441[1-5]|tmp\/portfolio-web-review/,
       );
   }
-  const platforms = await readFile(resolve(root, 'work/web-platforms/index.html'), 'utf8');
-  assert.match(platforms, /원본 UI · 샘플 데이터/);
 });
 
 test('XR has both supplied recordings and five attributed photographs', async () => {

@@ -48,7 +48,7 @@ export default function ScreenPair(props: Props) {
         </LocalLink>
         <figcaption>
           <span>{firstLabel}</span>
-          <span>{t('screenPair.originalUiSampleData')}</span>
+          <span>{t('screenPair.executionScreen')}</span>
         </figcaption>
       </figure>
       {second && (
@@ -71,7 +71,7 @@ export default function ScreenPair(props: Props) {
           </LocalLink>
           <figcaption>
             <span>{secondLabel}</span>
-            <span>{t('screenPair.originalUiSampleData')}</span>
+            <span>{t('screenPair.executionScreen')}</span>
           </figcaption>
         </figure>
       )}
