@@ -12,18 +12,10 @@
     "backgroundIntro": "Ich habe digitale und bildende Kunst studiert und Installationen geschaffen. Auch in der Softwareentwicklung macht es mir Freude, eine Idee konkret umzusetzen und für andere Menschen erlebbar zu machen.",
     "resume": "Lebenslauf · PDF auf Koreanisch",
     "contact": "Kontakt",
-    "makerHeading": "Kunst & Code",
-    "makerPerspective": "Wenn ich etwas umsetzen möchte, bin ich offen für verschiedene Disziplinen und unbekannte Werkzeuge. Brauche ich dafür eine neue Technologie, lerne ich sie und probiere sie aus. Diese Haltung macht für mich das Maker-Sein aus, sowohl in der Installationskunst als auch in der Softwareentwicklung.",
-    "startupsHeading": "Arbeiten in Startups",
     "startupsExperience": "Einen großen Teil meiner Berufserfahrung habe ich in intensiven Arbeitsphasen bei schnelllebigen Startups gesammelt. In kurzen Entwicklungszyklen habe ich mit verschiedenen Produkten und Technologien gearbeitet. Die Herausforderung, mich in unbekannte Probleme einzuarbeiten und sie zu lösen, hat mir dabei Freude gemacht.",
-    "startupsPractice": "Wenn ich einen gesamten Webclient verantwortete, musste ich Benutzeroberfläche, Content-Werkzeuge und Asset-Verarbeitung zusammen betrachten. Beim Renderer ging es um die internen Abläufe, die das Bild auf dem Bildschirm erzeugen. Mit jedem neuen Aufgabenbereich gab es Neues zu lernen und anzuwenden. So konnte ich in kurzer Zeit vielfältige Erfahrungen sammeln.",
-    "interactionHeading": "Neugier & Interaktion",
-    "curiosity": "Neue Technologien kennenzulernen macht mir Freude. Zuerst schaue ich mir an, was ich damit umsetzen könnte und wie sie sich auf meine aktuelle Arbeit anwenden lassen.",
-    "interaction": "Besonders interessieren mich die Stellen, an denen Menschen mit meiner Arbeit interagieren: wie jemand eine Installation erlebt oder wie eine Oberfläche auf Eingaben reagiert. Dieses Interesse verbindet meine künstlerische Arbeit mit der Softwareentwicklung.",
-    "interactionExample": "Bei diesem Portfolio waren mir Bewegung und Reaktion der Partikel genauso wichtig wie ihre Formen. Ich habe mehrfach angepasst, wie sie sich ohne Eingabe bewegen und wie stark sie auf die Maus reagieren. Es macht mir Freude, solche kleinen Unterschiede direkt auszuprobieren und weiterzuentwickeln.",
-    "exploreFieldForm": "Das Experiment Field / Form ansehen",
-    "culturesHeading": "Kulturen & Perspektiven",
-    "cultures": "Ich habe lange in Deutschland gelebt und schätze ein Umfeld, in dem unterschiedliche Kulturen und Perspektiven zusammenkommen. Ich möchte mich mit Menschen verschiedener Hintergründe austauschen und gemeinsam etwas schaffen."
+    "curiosity": "Wenn ich eine neue Technologie kennenlerne, frage ich mich, was ich damit machen könnte. Habe ich etwas vor, lerne ich, was dafür nötig ist, auch über Fachgrenzen hinweg. Es macht mir Freude, unbekannte Werkzeuge in der Praxis auszuprobieren und ihre Möglichkeiten zu entdecken.",
+    "interaction": "Besonders interessiert mich, wie Menschen mit meiner Arbeit interagieren: wie jemand eine Installation erlebt oder wie eine Oberfläche auf Eingaben reagiert. Dieses Interesse begleitet mich seit meiner Arbeit an Installationen bis heute in der Softwareentwicklung.",
+    "cultures": "Ich habe viele Jahre in Deutschland gelebt und dabei unterschiedliche Kulturen und Perspektiven kennengelernt. Ich tausche mich gern mit Menschen verschiedener Hintergründe aus und setze gemeinsam mit ihnen Ideen um. In einem solchen Umfeld möchte ich auch weiterhin arbeiten."
   },
   "index": {
     "aboutJaesookJeong": "Über Jaesook Jeong",

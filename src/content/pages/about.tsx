@@ -26,32 +26,11 @@ export default function About({ locale }: { locale: Locale }) {
       <p className={styles.role}>Frontend &amp; Graphics Engineer</p>
       <div className={styles.bio}>
         <p>{t('about.intro')}</p>
-      </div>
-      <div className={styles.sections}>
-        <section className={styles.section} aria-labelledby="art-and-code">
-          <h2 id="art-and-code">{t('about.makerHeading')}</h2>
-          <p>{t('about.backgroundIntro')}</p>
-          <p>{t('about.makerPerspective')}</p>
-        </section>
-        <section className={styles.section} aria-labelledby="startup-experience">
-          <h2 id="startup-experience">{t('about.startupsHeading')}</h2>
-          <p>{t('about.startupsExperience')}</p>
-          <p>{t('about.startupsPractice')}</p>
-        </section>
-        <section className={styles.section} aria-labelledby="across-cultures">
-          <h2 id="across-cultures">{t('about.culturesHeading')}</h2>
-          <p>{t('about.cultures')}</p>
-        </section>
-        <section className={styles.section} aria-labelledby="curiosity-and-interaction">
-          <h2 id="curiosity-and-interaction">{t('about.interactionHeading')}</h2>
-          <p>{t('about.curiosity')}</p>
-          <p>{t('about.interaction')}</p>
-          <p>{t('about.interactionExample')}</p>
-          <LocalLink className={styles.studyLink} href="/lab/field-form/" locale={locale}>
-            {t('about.exploreFieldForm')}
-            <Icon locale={locale} name="arrow-up-right" />
-          </LocalLink>
-        </section>
+        <p>{t('about.backgroundIntro')}</p>
+        <p>{t('about.startupsExperience')}</p>
+        <p>{t('about.curiosity')}</p>
+        <p>{t('about.interaction')}</p>
+        <p>{t('about.cultures')}</p>
       </div>
       <div className={styles.links}>
         <LocalLink href="/#work" locale={locale}>

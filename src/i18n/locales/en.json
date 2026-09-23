@@ -12,18 +12,10 @@
     "backgroundIntro": "I studied digital art and fine art and made installation work. As a developer, I still enjoy turning an idea into something tangible that other people can experience.",
     "resume": "Résumé · Korean PDF",
     "contact": "Contact",
-    "makerHeading": "Art & code",
-    "makerPerspective": "When there is something I want to make, I am open to working across disciplines and using unfamiliar tools. If reaching that goal means learning a new technology, I am willing to learn and try it. This is what being a maker means to me, in both installation art and software development.",
-    "startupsHeading": "Working in startups",
     "startupsExperience": "I have spent much of my career working intensively in fast-moving startups. Short development cycles exposed me to a wide range of products and technologies, and I have enjoyed taking on unfamiliar problems.",
-    "startupsPractice": "Owning a web client meant thinking through the user interface, content tools and asset processing together. Building a renderer took me into the systems that produce what appears on screen. Each change of scope brought something new to learn and put into practice, giving me a broad range of experience in a short time.",
-    "interactionHeading": "Curiosity & interaction",
-    "curiosity": "I enjoy encountering new technologies. I tend to start by exploring what I could make with them and how they might apply to the work I am doing.",
-    "interaction": "I am especially interested in the points where people interact with what I make: how a visitor experiences an installation, or how an interface responds to someone using it. This interest connects my art and development work.",
-    "interactionExample": "For this portfolio, I paid as much attention to the particles’ movement and response as to their shapes. I kept adjusting how they move at rest and how strongly they react to the mouse. I enjoy seeing how small changes affect the feel of a screen and refining them through use.",
-    "exploreFieldForm": "Explore the Field / Form experiment",
-    "culturesHeading": "Across cultures",
-    "cultures": "I lived in Germany for many years and value environments where different cultures and perspectives come together. I want to exchange ideas and make things with people from a range of backgrounds."
+    "curiosity": "When I encounter a new technology, I wonder what I could make with it. If there is something I want to build, I am happy to learn what it takes, whatever the discipline. I enjoy trying unfamiliar tools in actual work and discovering what they can do.",
+    "interaction": "I am especially interested in how people interact with what I make: how a visitor experiences an installation, or how an interface responds to someone using it. This interest has stayed with me from installation art through to software development.",
+    "cultures": "Living in Germany for many years introduced me to different cultures and perspectives. I enjoy exchanging ideas and making things with people from different backgrounds, and I want to keep working in that kind of environment."
   },
   "index": {
     "aboutJaesookJeong": "About Jaesook Jeong",
