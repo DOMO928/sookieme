@@ -36,17 +36,53 @@
   word-break: keep-all;
   overflow-wrap: break-word;
 }
-.bio p + p {
+.sections {
+  max-width: 520px;
+  margin-top: 42px;
+}
+.section {
+  border-top: 1px solid var(--line);
+  padding-top: 25px;
+}
+.section + .section {
+  margin-top: 46px;
+}
+.section h2 {
+  font-family: Inter, SookieSans, sans-serif;
+  font-size: clamp(21px, 2.4vw, 25px);
+  font-weight: 450;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+  margin-bottom: 22px;
+}
+.section p {
+  font:
+    16px/1.95 SookieSans,
+    Inter,
+    sans-serif;
+  color: #c5c9d0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.section p + p {
   margin-top: 18px;
+}
+:global(html:not([lang='ko'])) .section p {
+  font-family: Inter, sans-serif;
+  word-break: normal;
+}
+.studyLink {
+  margin-top: 20px;
 }
 .links {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 30px;
-  margin-top: 22px;
+  margin-top: 42px;
 }
 .links a,
-.contact a {
+.contact a,
+.studyLink {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -57,7 +93,8 @@
   text-underline-offset: 7px;
 }
 .links :global(.icon),
-.contact :global(.icon) {
+.contact :global(.icon),
+.studyLink :global(.icon) {
   width: 15px;
   height: 15px;
 }
@@ -94,8 +131,15 @@
   .head p.role {
     font-size: 13px;
   }
-  .bio p {
+  .bio p,
+  .section p {
     font-size: 15px;
+  }
+  .sections {
+    margin-top: 34px;
+  }
+  .section + .section {
+    margin-top: 36px;
   }
   .links {
     gap: 12px 24px;
@@ -109,5 +153,12 @@
   }
   .head h1 {
     font-size: 48px;
+  }
+  .section h2 {
+    break-after: avoid;
+  }
+  .section p {
+    orphans: 3;
+    widows: 3;
   }
 }
