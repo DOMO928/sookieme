@@ -44,12 +44,12 @@
   gap: 2px;
 }
 .header :global(.language-switch) a {
+  min-width: 40px;
+  justify-content: center;
   padding: 10px 9px;
   color: #aeb5bf;
   font-size: 12px;
-}
-.header :global(.language-switch) a:last-child {
-  padding-right: 0;
+  letter-spacing: 0.025em;
 }
 .header :global(.language-switch) a[aria-current='true'] {
   color: #f0f0ed;

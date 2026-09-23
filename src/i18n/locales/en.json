@@ -13,15 +13,17 @@
     "resume": "Résumé · Korean PDF",
     "contact": "Contact",
     "makerHeading": "Art & code",
-    "makerPerspective": "Installation work and programming use different tools, but both feel like making to me. That is why I think of myself as a maker.",
+    "makerPerspective": "When there is something I want to make, I am open to working across disciplines and using unfamiliar tools. If reaching that goal means learning a new technology, I am willing to learn and try it. This is what being a maker means to me, in both installation art and software development.",
     "startupsHeading": "Working in startups",
     "startupsExperience": "I have spent much of my career working intensively in fast-moving startups. Short development cycles exposed me to a wide range of products and technologies, and I have enjoyed taking on unfamiliar problems.",
     "startupsPractice": "Owning a web client meant thinking through the user interface, content tools and asset processing together. Building a renderer took me into the systems that produce what appears on screen. Each change of scope brought something new to learn and put into practice, giving me a broad range of experience in a short time.",
     "interactionHeading": "Curiosity & interaction",
-    "curiosity": "When I encounter a new technology, I wonder what I could make with it. I enjoy learning an unfamiliar tool and finding out what it can do by using it in a project.",
+    "curiosity": "I enjoy encountering new technologies. I tend to start by exploring what I could make with them and how they might apply to the work I am doing.",
     "interaction": "I am especially interested in the points where people interact with what I make: how a visitor experiences an installation, or how an interface responds to someone using it. This interest connects my art and development work.",
     "interactionExample": "For this portfolio, I paid as much attention to the particles’ movement and response as to their shapes. I kept adjusting how they move at rest and how strongly they react to the mouse. I enjoy seeing how small changes affect the feel of a screen and refining them through use.",
-    "exploreFieldForm": "Explore the Field / Form experiment"
+    "exploreFieldForm": "Explore the Field / Form experiment",
+    "culturesHeading": "Across cultures",
+    "cultures": "I lived in Germany for many years and value environments where different cultures and perspectives come together. I want to exchange ideas and make things with people from a range of backgrounds."
   },
   "index": {
     "aboutJaesookJeong": "About Jaesook Jeong",

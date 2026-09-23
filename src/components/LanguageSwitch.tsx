@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { locales, localizePath, type Locale } from '@/i18n/routes';
 const names = { ko: '한국어', en: 'English', de: 'Deutsch' };
+const shortNames = { ko: '한', en: 'EN', de: 'DE' };
 export default function LanguageSwitch({ locale, label }: { locale: Locale; label: string }) {
   const pathname = usePathname() ?? '/';
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function LanguageSwitch({ locale, label }: { locale: Locale; labe
             }
           }}
         >
-          {names[language]}
+          {shortNames[language]}
         </Link>
       ))}
     </nav>

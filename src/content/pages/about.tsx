@@ -38,6 +38,10 @@ export default function About({ locale }: { locale: Locale }) {
           <p>{t('about.startupsExperience')}</p>
           <p>{t('about.startupsPractice')}</p>
         </section>
+        <section className={styles.section} aria-labelledby="across-cultures">
+          <h2 id="across-cultures">{t('about.culturesHeading')}</h2>
+          <p>{t('about.cultures')}</p>
+        </section>
         <section className={styles.section} aria-labelledby="curiosity-and-interaction">
           <h2 id="curiosity-and-interaction">{t('about.interactionHeading')}</h2>
           <p>{t('about.curiosity')}</p>
